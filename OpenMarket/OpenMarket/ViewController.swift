@@ -16,10 +16,10 @@ class ViewController: UIViewController {
         
         let pageNumber = 1
         let itemsPerPage = 10
-        NetworkConnector.requestGET(api: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ItemList.self)
+        NetworkConnector.requestGET(api: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self)
         
         let productId = 522
-        NetworkConnector.requestGET(api: "api/products/\(productId)", type: ItemDetail.self)
+        NetworkConnector.requestGET(api: "api/products/\(productId)", type: ProductDetail.self)
     }
 
 

@@ -6,7 +6,7 @@ enum Currency: Decodable {
     case USD
 }
 
-struct Item: Decodable {
+struct Product: Decodable {
     let id: Int
     let vendorId: Int
     let name: String
@@ -34,7 +34,7 @@ struct Item: Decodable {
     }
 }
 
-struct ItemList: Decodable {
+struct ProductList: Decodable {
     let pageNo: Int
     let itemsPerPage: Int
     let totalCount: Int
@@ -43,7 +43,7 @@ struct ItemList: Decodable {
     let lastPage: Int
     let hasNext: Bool
     let hasPrev: Bool
-    let items: [Item]
+    let products: [Product]
     
     private enum CodingKeys: String, CodingKey {
         case pageNo = "page_no"
@@ -54,11 +54,11 @@ struct ItemList: Decodable {
         case lastPage = "last_page"
         case hasNext = "has_next"
         case hasPrev = "has_prev"
-        case items = "pages"
+        case products = "pages"
     }
 }
 
-struct ItemDetailImage: Decodable {
+struct ProductDetailImage: Decodable {
     let id: Int
     let url: String
     let thumbnailUrl: String
@@ -88,7 +88,7 @@ struct Vendor: Decodable {
     }
 }
 
-struct ItemDetail: Decodable {
+struct ProductDetail: Decodable {
     let id: Int
     let vendorId: Int
     let name: String
@@ -99,7 +99,7 @@ struct ItemDetail: Decodable {
     let bargainPrice: Double
     let discountedPrice: Double
     let stock: Int
-    let images: [ItemDetailImage]
+    let images: [ProductDetailImage]
     let vendors: Vendor
     let createdAt: String
     let issuedAt: String
