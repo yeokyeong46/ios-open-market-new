@@ -51,7 +51,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C237C7B0279ED83C00DA36A5 /* Models */ = {
+		C237C7B0279ED83C00DA36A5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				C237C7B1279ED86D00DA36A5 /* ProductList.swift */,
@@ -60,7 +60,16 @@
 				C237C7B4279ED89800DA36A5 /* ProductDetailImage.swift */,
 				C237C7B6279ED8B700DA36A5 /* Vendor.swift */,
 			);
-			path = Models;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C237C7BA279EDA2500DA36A5 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				C237C786279E430A00DA36A5 /* Network.swift */,
+				C237C78A279E4CD800DA36A5 /* Decoder.swift */,
+			);
+			path = Util;
 			sourceTree = "<group>";
 		};
 		C70FB0EE25BEF61C00C9924E = {
@@ -85,13 +94,12 @@
 				C70FB0FA25BEF61C00C9924E /* AppDelegate.swift */,
 				C70FB0FC25BEF61C00C9924E /* SceneDelegate.swift */,
 				C70FB0FE25BEF61C00C9924E /* ViewController.swift */,
-				C237C786279E430A00DA36A5 /* Network.swift */,
-				C237C78A279E4CD800DA36A5 /* Decoder.swift */,
 				C70FB10025BEF61C00C9924E /* Main.storyboard */,
 				C70FB10325BEF61D00C9924E /* Assets.xcassets */,
 				C70FB10525BEF61D00C9924E /* LaunchScreen.storyboard */,
 				C70FB10825BEF61D00C9924E /* Info.plist */,
-				C237C7B0279ED83C00DA36A5 /* Models */,
+				C237C7BA279EDA2500DA36A5 /* Util */,
+				C237C7B0279ED83C00DA36A5 /* Model */,
 			);
 			path = OpenMarket;
 			sourceTree = "<group>";
