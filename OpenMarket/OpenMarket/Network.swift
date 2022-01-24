@@ -11,13 +11,13 @@ struct NetworkConnector {
             }
             guard let httpResponse = response as? HTTPURLResponse,
                 (200...299).contains(httpResponse.statusCode) else {
-                    print((response as! HTTPURLResponse).statusCode)
+                print((response as! HTTPURLResponse).statusCode)
                 return
             }
+            print(httpResponse.statusCode)
             guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
             print(string)
         }.resume()
-        
     }
     
     static func requestGET<T: Decodable> (api: String, type: T.Type) {
@@ -30,7 +30,7 @@ struct NetworkConnector {
             }
             guard let httpResponse = response as? HTTPURLResponse,
                 (200...299).contains(httpResponse.statusCode) else {
-                    print((response as! HTTPURLResponse).statusCode)
+                print((response as! HTTPURLResponse).statusCode)
                 return
             }
             guard let data = data, let result = decodeData(type: type, from: data) else { return }
