@@ -1,7 +1,7 @@
 import UIKit
 
 struct NetworkConnector {
-    static func checkHealth() {
+    static func checkHealth(completionHandler: @escaping (Bool)->Void) {
         guard let targetURL = URL(string: "https://market-training.yagom-academy.kr/healthChecker") else { return }
         let URLRequest = URLRequest(url: targetURL)
         
@@ -14,9 +14,13 @@ struct NetworkConnector {
                 print((response as! HTTPURLResponse).statusCode)
                 return
             }
-            print(httpResponse.statusCode)
-            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
-            print(string)
+            DispatchQueue.main.async {
+                if httpResponse.statusCode == 200 {
+                    completionHandler(true)
+                } else {
+                    completionHandler(false)
+                }
+            }
         }.resume()
     }
     

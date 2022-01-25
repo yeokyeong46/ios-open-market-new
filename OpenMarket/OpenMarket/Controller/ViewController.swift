@@ -18,21 +18,25 @@ class ViewController: UIViewController {
         myTableView.delegate = self
         myTableView.dataSource = self
         
-        NetworkConnector.checkHealth()
-        
-        let pageNumber = 1
-        let itemsPerPage = 20
-        NetworkConnector.requestGET(api: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
-            (output) in
-            self.testProductList = output
-            self.myTableView.reloadData()
-        }
-        
-        let productId = 522
-        NetworkConnector.requestGET(api: "api/products/\(productId)", type: ProductDetail.self) {
-            (output) in
-            print(output)
-        }
+        NetworkConnector.checkHealth() {
+            output in
+            if output == true {
+                let pageNumber = 1
+                let itemsPerPage = 20
+                NetworkConnector.requestGET(api: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
+                    output in
+                    self.testProductList = output
+                    self.myTableView.reloadData()
+                }
+                
+                let productId = 522
+                NetworkConnector.requestGET(api: "api/products/\(productId)", type: ProductDetail.self) {
+                    output in
+                    print(output)
+                }
+            }
+            else { print("check state of the api") }
+        } 
     }
 }
 
