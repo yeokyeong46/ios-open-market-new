@@ -23,16 +23,24 @@ class ViewController: UIViewController {
             if output == true {
                 let pageNumber = 1
                 let itemsPerPage = 20
-                NetworkConnector.requestGET(api: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
-                    output in
+                NetworkConnector.requestGET(apiPath: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
+                    (errorStatus, output) in
+                    guard let output = output else {
+                        print(errorStatus?.description)
+                        return
+                    }
                     self.testProductList = output
                     self.myTableView.reloadData()
                     print(output)
                 }
                 
                 let productId = 522
-                NetworkConnector.requestGET(api: "api/products/\(productId)", type: ProductDetail.self) {
-                    output in
+                NetworkConnector.requestGET(apiPath: "api/products/\(productId)", type: ProductDetail.self) {
+                    (errorStatus, output) in
+                    guard let output = output else {
+                        print(errorStatus?.description)
+                        return
+                    }
                     print(output)
                 }
             }

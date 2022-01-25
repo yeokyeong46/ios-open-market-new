@@ -1,10 +1,6 @@
 import UIKit
 
-enum RequestError: Error {
-    case responseReturnError
-    case responseStatusError
-    case EmptyDataError
-}
+
 
 struct NetworkConnector {
     static func checkHealth(completionHandler: @escaping (Bool)->Void) {
@@ -18,6 +14,7 @@ struct NetworkConnector {
             guard let httpResponse = response as? HTTPURLResponse,
                 (200...299).contains(httpResponse.statusCode) else {
                 print((response as! HTTPURLResponse).statusCode)
+                completionHandler(false)
                 return
             }
             DispatchQueue.main.async {
@@ -30,23 +27,29 @@ struct NetworkConnector {
         }.resume()
     }
     
-    static func requestGET<T: Decodable> (api: String, type: T.Type, completionHandler: @escaping (T)->Void) {
-        guard let targetURL = URL(string: "https://market-training.yagom-academy.kr/\(api)") else { return }
+    static func requestGET<T: Decodable> (apiPath: String, type: T.Type, completionHandler: @escaping (RequestError?, T?)->Void) {
+        guard let targetURL = URL(string: "https://market-training.yagom-academy.kr/\(apiPath)") else { return }
         let URLRequest = URLRequest(url: targetURL)
 
         URLSession.shared.dataTask(with: URLRequest) { data, response, error in
-            if let error = error {
-                print(error)
+            if let _ = error {
+                completionHandler(RequestError.responseReturnError, nil)
             }
             guard let httpResponse = response as? HTTPURLResponse,
                 (200...299).contains(httpResponse.statusCode) else {
-                print((response as! HTTPURLResponse).statusCode)
+                    completionHandler(RequestError.responseStatusError, nil)
+                    return
+            }
+            guard let data = data else {
+                completionHandler(RequestError.emptyDataError, nil)
                 return
             }
-            guard let data = data else { return }
-            guard let result = Decoder.shared.decode(type: type, from: data) else { return }
+            guard let result = Decoder.shared.decode(type: type, from: data) else {
+                completionHandler(RequestError.decodeError, nil)
+                return
+            }
             DispatchQueue.main.async {
-                completionHandler(result)
+                completionHandler(nil, result)
             }
         }.resume()
     }
