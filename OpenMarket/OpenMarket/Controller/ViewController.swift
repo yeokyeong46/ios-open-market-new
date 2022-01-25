@@ -27,6 +27,7 @@ class ViewController: UIViewController {
                     output in
                     self.testProductList = output
                     self.myTableView.reloadData()
+                    print(output)
                 }
                 
                 let productId = 522

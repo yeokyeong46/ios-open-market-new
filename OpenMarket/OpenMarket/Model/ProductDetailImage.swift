@@ -8,8 +8,7 @@ struct ProductDetailImage: Decodable {
     let issuedAt: Date
     
     private enum CodingKeys: String, CodingKey {
-        case id
-        case url
+        case id, url
         case thumbnailUrl = "thumbnail_url"
         case uploadResult = "succeed"
         case issuedAt = "issued_at"

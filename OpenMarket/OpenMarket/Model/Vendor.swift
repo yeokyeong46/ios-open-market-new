@@ -7,8 +7,7 @@ struct Vendor: Decodable {
     let issuedAt: Date
     
     private enum CodingKeys: String, CodingKey {
-        case name
-        case id
+        case name, id
         case createdAt = "created_at"
         case issuedAt = "issued_at"
     }

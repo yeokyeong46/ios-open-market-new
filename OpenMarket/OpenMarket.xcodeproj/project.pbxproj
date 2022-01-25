@@ -77,10 +77,10 @@
 			isa = PBXGroup;
 			children = (
 				C237C7B1279ED86D00DA36A5 /* ProductList.swift */,
+				C237C788279E451400DA36A5 /* Product.swift */,
 				C237C7B8279ED8D000DA36A5 /* ProductDetail.swift */,
 				C237C7B4279ED89800DA36A5 /* ProductDetailImage.swift */,
 				C237C7B6279ED8B700DA36A5 /* Vendor.swift */,
-				C237C788279E451400DA36A5 /* Product.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";

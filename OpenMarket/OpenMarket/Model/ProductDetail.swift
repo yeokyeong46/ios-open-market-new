@@ -1,8 +1,8 @@
 import Foundation
 
 enum Currency: String, Decodable {
-    case KRW = "KRW"
-    case USD = "USD"
+    case KRW
+    case USD
 }
 
 struct ProductDetail: Decodable {
@@ -22,18 +22,10 @@ struct ProductDetail: Decodable {
     let issuedAt: Date
     
     private enum CodingKeys: String, CodingKey {
-        case id
+        case id, name, description, thumbnail, currency, price, stock, images, vendors
         case vendorId = "vendor_id"
-        case name
-        case description
-        case thumbnail
-        case currency
-        case price
         case bargainPrice = "bargain_price"
         case discountedPrice = "discounted_price"
-        case stock
-        case images
-        case vendors
         case createdAt = "created_at"
         case issuedAt = "issued_at"
     }
