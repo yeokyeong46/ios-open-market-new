@@ -1,5 +1,11 @@
 import UIKit
 
+enum RequestError: Error {
+    case responseReturnError
+    case responseStatusError
+    case EmptyDataError
+}
+
 struct NetworkConnector {
     static func checkHealth(completionHandler: @escaping (Bool)->Void) {
         guard let targetURL = URL(string: "https://market-training.yagom-academy.kr/healthChecker") else { return }
@@ -38,7 +44,7 @@ struct NetworkConnector {
                 return
             }
             guard let data = data else { return }
-            guard let result = decodeData(type: type, from: data) else { return }
+            guard let result = Decoder.shared.decode(type: type, from: data) else { return }
             DispatchQueue.main.async {
                 completionHandler(result)
             }
