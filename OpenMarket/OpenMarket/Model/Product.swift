@@ -1,3 +1,5 @@
+import Foundation
+
 struct Product: Decodable {
     let id: Int
     let vendorId: Int
@@ -8,8 +10,8 @@ struct Product: Decodable {
     let bargainPrice: Double
     let discountedPrice: Double
     let stock: Int
-    let createdAt: String
-    let issuedAt: String
+    let createdAt: Date
+    let issuedAt: Date
     
     private enum CodingKeys: String, CodingKey {
         case id

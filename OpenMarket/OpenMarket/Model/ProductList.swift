@@ -7,7 +7,7 @@ struct ProductList: Decodable {
     let lastPage: Int
     let hasNext: Bool
     let hasPrev: Bool
-    let products: [Product]
+    let products: [ProductDetail]
     
     private enum CodingKeys: String, CodingKey {
         case pageNo = "page_no"
