@@ -1,8 +1,8 @@
 import Foundation
 
 enum RequestError: Error {
-    case responseReturnError
-    case responseStatusError
+    case transportError
+    case serverError
     case emptyDataError
     case decodeError
 }
@@ -10,10 +10,10 @@ enum RequestError: Error {
 extension RequestError: LocalizedError {
     var description: String? {
         switch self {
-        case .responseReturnError:
+        case .transportError:
             return "리퀘스트 실패"
-        case .responseStatusError:
-            return "상태코드가 200이 아님"
+        case .serverError:
+            return "상태코드가 에러"
         case .emptyDataError:
             return "조회 결과 없음"
         case .decodeError:

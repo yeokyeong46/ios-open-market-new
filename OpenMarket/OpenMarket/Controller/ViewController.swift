@@ -19,32 +19,38 @@ class ViewController: UIViewController {
         myTableView.dataSource = self
         
         NetworkConnector.checkHealth() {
-            output in
-            if output == true {
-                let pageNumber = 1
-                let itemsPerPage = 20
-                NetworkConnector.requestGET(apiPath: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
-                    (errorStatus, output) in
-                    guard let output = output else {
-                        print(errorStatus?.description)
-                        return
+            result in
+            switch result {
+            case .success(let data):
+                if data == true {
+                    let pageNumber = 1
+                    let itemsPerPage = 20
+                    NetworkConnector.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
+                        result in
+                        switch result {
+                        case .success(let data):
+                            self.testProductList = data
+                            self.myTableView.reloadData()
+                        case .failure(let error):
+                            print(error.description)
+                        }
                     }
-                    self.testProductList = output
-                    self.myTableView.reloadData()
-                    print(output)
-                }
-                
-                let productId = 522
-                NetworkConnector.requestGET(apiPath: "api/products/\(productId)", type: ProductDetail.self) {
-                    (errorStatus, output) in
-                    guard let output = output else {
-                        print(errorStatus?.description)
-                        return
+                    let productId = 522
+                    NetworkConnector.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
+                        result in
+                        switch result {
+                        case .success(let data):
+                            print(data)
+                        case .failure(let error):
+                            print(error.description)
+                        }
                     }
-                    print(output)
+                } else {
+                    print("check state of the api")
                 }
+            case .failure(let error):
+                print(error.description)
             }
-            else { print("check state of the api") }
         } 
     }
 }
