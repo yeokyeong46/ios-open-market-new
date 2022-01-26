@@ -1,7 +1,7 @@
 import Foundation
 
 struct MockData {
-    let data: Data = Data()
+    let data: Data = "\"OK\"".data(using: .utf8)!
 }
 
 class MockURLSessionDataTask: URLSessionDataTask {

@@ -22,8 +22,10 @@ class NetworkConnector {
                     completionHandler(.failure(.serverError))
                 return
             }
+            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            print(string)
             DispatchQueue.main.async {
-                if httpResponse.statusCode == 200 {
+                if httpResponse.statusCode == 200 && string == "\"OK\""{
                     completionHandler(.success(true))
                 } else {
                     completionHandler(.success(false))
