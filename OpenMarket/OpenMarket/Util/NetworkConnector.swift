@@ -1,11 +1,18 @@
 import UIKit
 
-struct NetworkConnector {
-    static func checkHealth(completionHandler: @escaping (Result<Bool,RequestError>)->Void) {
+class NetworkConnector {
+    
+    let session: URLSessionProtocol
+    
+    init(session: URLSessionProtocol = URLSession.shared) {
+        self.session = session
+    }
+    
+    func checkHealth(completionHandler: @escaping (Result<Bool,RequestError>)->Void) {
         guard let targetURL = URL(string: "https://market-training.yagom-academy.kr/healthChecker") else { return }
         let URLRequest = URLRequest(url: targetURL)
         
-        URLSession.shared.dataTask(with: URLRequest) { data, response, error in
+        self.session.dataTask(with: URLRequest) { data, response, error in
             if let error = error {
                 completionHandler(.failure(.transportError))
             }
@@ -25,11 +32,11 @@ struct NetworkConnector {
         }.resume()
     }
     
-    static func requestGET<T: Decodable> (path: String, type: T.Type, completionHandler: @escaping (Result<T,RequestError>)->Void) {
+    func requestGET<T: Decodable> (path: String, type: T.Type, completionHandler: @escaping (Result<T,RequestError>)->Void) {
         guard let targetURL = URL(string: "https://market-training.yagom-academy.kr/\(path)") else { return }
         let URLRequest = URLRequest(url: targetURL)
 
-        URLSession.shared.dataTask(with: URLRequest) { data, response, error in
+        self.session.dataTask(with: URLRequest) { data, response, error in
             if let _ = error {
                 completionHandler(.failure(.transportError))
             }
@@ -52,3 +59,9 @@ struct NetworkConnector {
         }.resume()
     }
 }
+
+protocol URLSessionProtocol {
+    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask
+}
+
+extension URLSession: URLSessionProtocol {}

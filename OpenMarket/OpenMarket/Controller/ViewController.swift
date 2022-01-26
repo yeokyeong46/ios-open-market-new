@@ -11,6 +11,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var myTableView: UITableView!
     
     var testProductList: ProductList? = nil
+    let networkController = NetworkConnector()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,14 +19,14 @@ class ViewController: UIViewController {
         myTableView.delegate = self
         myTableView.dataSource = self
         
-        NetworkConnector.checkHealth() {
+        networkController.checkHealth() {
             result in
             switch result {
             case .success(let data):
                 if data == true {
                     let pageNumber = 1
                     let itemsPerPage = 20
-                    NetworkConnector.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
+                    self.networkController.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
                         result in
                         switch result {
                         case .success(let data):
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
                         }
                     }
                     let productId = 522
-                    NetworkConnector.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
+                    self.networkController.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
                         result in
                         switch result {
                         case .success(let data):
