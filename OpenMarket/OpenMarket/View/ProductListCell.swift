@@ -101,7 +101,7 @@ class ProductListCell: UICollectionViewListCell {
         } else {
             let fullText = "\(currency) \(formattedPrice) \(currency) \(formatteddiscountedPrice)"
             let oldPrice = (fullText as NSString).range(of: "\(currency) \(formattedPrice)")
-            let newPrice = (fullText as NSString).range(of: "\(currency) \(formatteddiscountedPrice)")
+            let newPrice = (fullText as NSString).range(of: " \(currency) \(formatteddiscountedPrice)")
             let attributedString = NSMutableAttributedString(string: fullText)
             
             attributedString.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: oldPrice)

@@ -37,7 +37,7 @@ class ProductGridCell: UICollectionViewCell {
         stackView.alignment = .center
 
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         return stackView
     }()
     
@@ -98,7 +98,7 @@ class ProductGridCell: UICollectionViewCell {
         } else {
             let fullText = "\(currency) \(formattedPrice)\n\(currency) \(formatteddiscountedPrice)"
             let oldPrice = (fullText as NSString).range(of: "\(currency) \(formattedPrice)")
-            let newPrice = (fullText as NSString).range(of: "\(currency) \(formatteddiscountedPrice)")
+            let newPrice = (fullText as NSString).range(of: "\n\(currency) \(formatteddiscountedPrice)")
             let attributedString = NSMutableAttributedString(string: fullText)
             
             attributedString.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: oldPrice)

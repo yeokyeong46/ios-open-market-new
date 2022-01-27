@@ -27,7 +27,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchProductListData(page: 1, num: 20)
+        fetchProductListData(page: 1, num: 30)
         setSegmentControl()
     }
 }
@@ -130,13 +130,13 @@ extension ViewController {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(self.view.frame.height * 0.33))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
         group.interItemSpacing = .fixed(8)
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = CGFloat(8)
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         
         let layout = UICollectionViewCompositionalLayout(section: section)
         return layout
