@@ -21,7 +21,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var segmentControl: UISegmentedControl!
     
     // custom cell list view
-    private var collectionView: UICollectionView! = nil
+    private var collectionListView: UICollectionView! = nil
+    private var collectionGridView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
     
     
@@ -42,7 +43,12 @@ extension ViewController {
                 self.testProductList = data
                 self.products = data.products
                 self.configureCollectionView()
+                self.configureGridCollectionView()
                 self.configureDataSource()
+                self.configureGridDataSource()
+                self.collectionListView.alpha = 1.0
+                self.collectionGridView.alpha = 0.0
+                
             case .failure(let error):
                 print(error.description)
             }
@@ -50,17 +56,16 @@ extension ViewController {
     }
 }
 
-// custom cell list view
 extension ViewController {
+    // list
     private func createLayout() -> UICollectionViewLayout {
         let config = UICollectionLayoutListConfiguration(appearance: .plain)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     
     private func configureCollectionView() {
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
-        view.addSubview(collectionView)
-        collectionView.delegate = self
+        collectionListView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+        view.addSubview(collectionListView)
     }
     
     private func configureDataSource() {
@@ -69,7 +74,7 @@ extension ViewController {
             cell.accessories = [.disclosureIndicator()]
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionView) {
+        dataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionListView) {
             (collectionView: UICollectionView, indexPath: IndexPath, item: Product) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
@@ -80,11 +85,53 @@ extension ViewController {
         snapshot.appendItems(products)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
-}
-
-extension ViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
+    
+    //grid
+    private func createGridLayout() -> UICollectionViewLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(self.view.frame.height * 0.25))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
+        group.interItemSpacing = .fixed(8)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = CGFloat(8)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
+    
+    private func configureGridCollectionView() {
+        collectionGridView = UICollectionView(frame: view.bounds, collectionViewLayout: createGridLayout())
+        collectionGridView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(collectionGridView)
+        collectionGridView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            collectionGridView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionGridView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionGridView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionGridView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    private func configureGridDataSource() {
+        let cellRegistration = UICollectionView.CellRegistration<ProductGridCell, Product> { (cell, indexPath, item) in
+            cell.configCell(with: item)
+        }
+        
+        dataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionGridView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, item: Product) -> UICollectionViewCell? in
+            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
+        }
+        
+        // initial data
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(products)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
 
@@ -99,12 +146,14 @@ extension ViewController {
     func segmentControlchanged() {
         switch segmentControl.selectedSegmentIndex {
         case 0:
-            collectionView.alpha = 1.0
+            collectionListView.alpha = 1.0
+            collectionGridView.alpha = 0.0
         case 1:
-            collectionView.alpha = 0.0
-            print("grid")
+            collectionListView.alpha = 0.0
+            collectionGridView.alpha = 1.0
         default:
-            collectionView.alpha = 1.0
+            collectionListView.alpha = 1.0
+            collectionGridView.alpha = 0.0
         }
     }
 }
