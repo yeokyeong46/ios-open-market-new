@@ -12,15 +12,13 @@ private enum Section: Hashable {
 
 class ViewController: UIViewController {
     
-    // api data
     let networkController = NetworkConnector()
     var testProductList: ProductList? = nil
     var products: [Product] = []
     
-    // storyboard
     @IBOutlet weak var segmentControl: UISegmentedControl!
+    @IBOutlet weak var loadingLabel: UILabel!
     
-    // custom cell list view
     private var collectionListView: UICollectionView! = nil
     private var collectionGridView: UICollectionView! = nil
     private var listDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
@@ -34,25 +32,64 @@ class ViewController: UIViewController {
     }
 }
 
-// for fetch data
 extension ViewController {
     func fetchProductListData(page pageNumber: Int, num itemsPerPage: Int) {
         self.networkController.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
             result in
             switch result {
             case .success(let data):
-                self.testProductList = data
-                self.products = data.products
-                self.configureListHierarchy()
-                self.configureGridHierarchy()
-                self.configureListDataSource()
-                self.configureGridDataSource()
+                
+                self.setProductData(with: data)
+                self.makeListView()
+                self.makeGridView()
+                
                 self.collectionListView.alpha = 1.0
                 self.collectionGridView.alpha = 0.0
+                
+                self.loadingLabel.isHidden = true
                 
             case .failure(let error):
                 print(error.description)
             }
+        }
+    }
+}
+
+extension ViewController {
+    private func setProductData(with data: ProductList) {
+        self.testProductList = data
+        self.products = data.products
+    }
+    
+    private func makeListView() {
+        self.configureListHierarchy()
+        self.configureListDataSource()
+    }
+    
+    private func makeGridView() {
+        self.configureGridHierarchy()
+        self.configureGridDataSource()
+    }
+}
+
+extension ViewController {
+    func setSegmentControl() {
+        segmentControl.selectedSegmentIndex = 0
+        segmentControl.addTarget(self, action: #selector(segmentControlchanged), for: UIControl.Event.valueChanged)
+    }
+    
+    @objc
+    func segmentControlchanged() {
+        switch segmentControl.selectedSegmentIndex {
+        case 0:
+            collectionListView.alpha = 1.0
+            collectionGridView.alpha = 0.0
+        case 1:
+            collectionListView.alpha = 0.0
+            collectionGridView.alpha = 1.0
+        default:
+            collectionListView.alpha = 1.0
+            collectionGridView.alpha = 0.0
         }
     }
 }
@@ -117,6 +154,8 @@ extension ViewController {
             collectionGridView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionGridView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        collectionGridView.delegate = self
     }
     
     private func configureGridDataSource() {
@@ -140,31 +179,11 @@ extension ViewController {
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionListView.deselectItem(at: indexPath, animated: true)
+        collectionGridView.deselectItem(at: indexPath, animated: true)
     }
 }
 
-extension ViewController {
-    // for segment controller
-    func setSegmentControl() {
-        segmentControl.selectedSegmentIndex = 0
-        segmentControl.addTarget(self, action: #selector(segmentControlchanged), for: UIControl.Event.valueChanged)
-    }
-    
-    @objc
-    func segmentControlchanged() {
-        switch segmentControl.selectedSegmentIndex {
-        case 0:
-            collectionListView.alpha = 1.0
-            collectionGridView.alpha = 0.0
-        case 1:
-            collectionListView.alpha = 0.0
-            collectionGridView.alpha = 1.0
-        default:
-            collectionListView.alpha = 1.0
-            collectionGridView.alpha = 0.0
-        }
-    }
-}
+
 
 
 

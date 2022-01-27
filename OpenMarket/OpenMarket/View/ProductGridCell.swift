@@ -1,10 +1,3 @@
-//
-//  ProductGridCell.swift
-//  OpenMarket
-//
-//  Created by kakao on 2022/01/27.
-//
-
 import UIKit
 
 class ProductGridCell: UICollectionViewCell {
@@ -50,14 +43,14 @@ class ProductGridCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        layout()
+        setCellLayout()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    func layout() {
+    func setCellLayout() {
         contentView.addSubview(productStackView)
         productStackView.translatesAutoresizingMaskIntoConstraints = false
         
