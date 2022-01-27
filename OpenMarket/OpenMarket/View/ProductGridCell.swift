@@ -18,8 +18,8 @@ class ProductGridCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.4).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.4).isActive = true
         return imageView
     }()
     
@@ -42,6 +42,9 @@ class ProductGridCell: UICollectionViewCell {
         stackView.distribution = .equalSpacing
         stackView.spacing = 5
         stackView.alignment = .center
+
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         return stackView
     }()
     
@@ -58,8 +61,9 @@ class ProductGridCell: UICollectionViewCell {
         contentView.addSubview(productStackView)
         productStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        layer.masksToBounds = true
         layer.cornerRadius = 10
+        layer.borderColor = UIColor.systemGray.cgColor
+        layer.borderWidth = 2
         
         NSLayoutConstraint.activate([
             productStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -81,9 +85,7 @@ class ProductGridCell: UICollectionViewCell {
         productThumbnail.image = UIImage(data: thumbnailData)
         productName.text = product.name
         productName.font = UIFont.preferredFont(forTextStyle: .title1)
-        
-        
-        
+
         let currency = product.currency.rawValue
         let price = product.price
         let discountedPrice = product.discountedPrice

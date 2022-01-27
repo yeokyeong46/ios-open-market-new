@@ -23,7 +23,8 @@ class ViewController: UIViewController {
     // custom cell list view
     private var collectionListView: UICollectionView! = nil
     private var collectionGridView: UICollectionView! = nil
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
+    private var listDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
+    private var GridDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
     
     
     override func viewDidLoad() {
@@ -42,9 +43,9 @@ extension ViewController {
             case .success(let data):
                 self.testProductList = data
                 self.products = data.products
-                self.configureCollectionView()
-                self.configureGridCollectionView()
-                self.configureDataSource()
+                self.configureListHierarchy()
+                self.configureGridHierarchy()
+                self.configureListDataSource()
                 self.configureGridDataSource()
                 self.collectionListView.alpha = 1.0
                 self.collectionGridView.alpha = 0.0
@@ -58,32 +59,33 @@ extension ViewController {
 
 extension ViewController {
     // list
-    private func createLayout() -> UICollectionViewLayout {
+    private func createListLayout() -> UICollectionViewLayout {
         let config = UICollectionLayoutListConfiguration(appearance: .plain)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     
-    private func configureCollectionView() {
-        collectionListView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+    private func configureListHierarchy() {
+        collectionListView = UICollectionView(frame: view.bounds, collectionViewLayout: createListLayout())
+        collectionListView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionListView)
+        collectionListView.delegate = self
     }
     
-    private func configureDataSource() {
+    private func configureListDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<ProductListCell, Product> { (cell, indexPath, item) in
             cell.update(with: item)
             cell.accessories = [.disclosureIndicator()]
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionListView) {
+        listDataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionListView) {
             (collectionView: UICollectionView, indexPath: IndexPath, item: Product) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
         
-        // initial data
         var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
         snapshot.appendSections([.main])
         snapshot.appendItems(products)
-        dataSource.apply(snapshot, animatingDifferences: false)
+        listDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     //grid
@@ -91,7 +93,7 @@ extension ViewController {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(self.view.frame.height * 0.25))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(self.view.frame.height * 0.33))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
         group.interItemSpacing = .fixed(8)
         
@@ -103,7 +105,7 @@ extension ViewController {
         return layout
     }
     
-    private func configureGridCollectionView() {
+    private func configureGridHierarchy() {
         collectionGridView = UICollectionView(frame: view.bounds, collectionViewLayout: createGridLayout())
         collectionGridView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionGridView)
@@ -122,16 +124,22 @@ extension ViewController {
             cell.configCell(with: item)
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionGridView) {
+        GridDataSource = UICollectionViewDiffableDataSource<Section, Product>(collectionView: collectionGridView) {
             (collectionView: UICollectionView, indexPath: IndexPath, item: Product) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
         
-        // initial data
         var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
         snapshot.appendSections([.main])
         snapshot.appendItems(products)
-        dataSource.apply(snapshot, animatingDifferences: false)
+        GridDataSource.apply(snapshot, animatingDifferences: false)
+    }
+}
+
+
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionListView.deselectItem(at: indexPath, animated: true)
     }
 }
 
