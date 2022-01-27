@@ -19,7 +19,6 @@ class ViewController: UIViewController {
     
     // storyboard
     @IBOutlet weak var segmentControl: UISegmentedControl!
-    @IBOutlet weak var testLabel: UILabel!
     
     // custom cell list view
     private var collectionView: UICollectionView! = nil
@@ -29,7 +28,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchProductListData(page: 1, num: 20)
-//        setSegmentControl()
+        setSegmentControl()
     }
 }
 
@@ -83,22 +82,11 @@ extension ViewController {
     }
 }
 
-
-
-
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
     }
 }
-
-
-
-
-
-
-
-
 
 extension ViewController {
     // for segment controller
@@ -111,11 +99,12 @@ extension ViewController {
     func segmentControlchanged() {
         switch segmentControl.selectedSegmentIndex {
         case 0:
-            testLabel.text = "list!"
+            collectionView.alpha = 1.0
         case 1:
-            testLabel.text = "grid!"
+            collectionView.alpha = 0.0
+            print("grid")
         default:
-            testLabel.text = "sth wrong"
+            collectionView.alpha = 1.0
         }
     }
 }
