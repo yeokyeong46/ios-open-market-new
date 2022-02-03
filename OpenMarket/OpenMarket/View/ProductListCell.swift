@@ -17,8 +17,8 @@ class ProductListCell: UICollectionViewListCell {
         return .subtitleCell()
     }
     
-    private let productStockLabel = UILabel()
-    private var productStockLabelContraints: (leading: NSLayoutConstraint, trailing: NSLayoutConstraint, centerY: NSLayoutConstraint)?
+    private let productRemainedStock = UILabel()
+    private var productRemainedStockContraints: (leading: NSLayoutConstraint, trailing: NSLayoutConstraint, centerY: NSLayoutConstraint)?
     
     private lazy var productListContentView = UIListContentView(configuration: defaultProductConfiguration())
     
@@ -35,18 +35,18 @@ class ProductListCell: UICollectionViewListCell {
     }
     
     func setupViewIfNeeded() {
-        guard productStockLabelContraints == nil else {
+        guard productRemainedStockContraints == nil else {
             return
         }
         
-        [productListContentView, productStockLabel].forEach {
+        [productListContentView, productRemainedStock].forEach {
             contentView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
-        let contraints = (leading: productStockLabel.leadingAnchor.constraint(greaterThanOrEqualTo: productListContentView.trailingAnchor),
-                          trailing: productStockLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                          centerY: productStockLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor))
+        let contraints = (leading: productRemainedStock.leadingAnchor.constraint(greaterThanOrEqualTo: productListContentView.trailingAnchor),
+                          trailing: productRemainedStock.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                          centerY: productRemainedStock.centerYAnchor.constraint(equalTo: contentView.centerYAnchor))
         
         NSLayoutConstraint.activate([
             productListContentView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -58,7 +58,7 @@ class ProductListCell: UICollectionViewListCell {
             contraints.centerY
         ])
         
-        productStockLabelContraints = contraints
+        productRemainedStockContraints = contraints
         
     }
     
@@ -68,7 +68,22 @@ class ProductListCell: UICollectionViewListCell {
         var content = defaultProductConfiguration().updated(for: state)
         content.axesPreservingSuperviewLayoutMargins = []
         
-        guard let thumbnailString = state.product?.thumbnail else { return }
+        guard let thumbnailString = state.product?.thumbnail,
+              let currency = state.product?.currency.rawValue,
+              let price = state.product?.price,
+              let discountedPrice = state.product?.discountedPrice,
+              let stock = state.product?.stock
+        else { return }
+        
+        setThumbnailImage(&content, with: thumbnailString)
+        content.text = state.product?.name
+        content.textProperties.font = UIFont.preferredFont(forTextStyle: .title1)
+        setPriceLabel(&content, currency, price, discountedPrice)
+        setStockLabel(with: stock)
+        productListContentView.configuration = content
+    }
+    
+    private func setThumbnailImage(_ content: inout UIListContentConfiguration, with thumbnailString: String) {
         guard let thumbnailURL = URL(string: thumbnailString) else { return }
         var thumbnailData = Data()
         do {
@@ -78,14 +93,9 @@ class ProductListCell: UICollectionViewListCell {
         }
         content.image = UIImage(data: thumbnailData)
         content.imageProperties.maximumSize = CGSize(width: UIScreen.main.bounds.height * 0.09, height: UIScreen.main.bounds.height * 0.09)
-        content.text = state.product?.name
-        content.textProperties.font = UIFont.preferredFont(forTextStyle: .title1)
-        
-        guard let currency = state.product?.currency.rawValue,
-              let price = state.product?.price,
-              let discountedPrice = state.product?.discountedPrice
-        else { return }
-        
+    }
+    
+    private func setPriceLabel(_ content: inout UIListContentConfiguration, _ currency: String, _ price: Double, _ discountedPrice: Double ) {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         guard let formattedPrice = numberFormatter.string(from: NSNumber(value: price)) else { return }
@@ -97,7 +107,6 @@ class ProductListCell: UICollectionViewListCell {
         if discountedPrice == 0 {
             content.secondaryText = "\(currency) \(formattedPrice)"
             content.secondaryTextProperties.font = UIFont.preferredFont(forTextStyle: .body)
-            
         } else {
             let fullText = "\(currency) \(formattedPrice) \(currency) \(formatteddiscountedPrice)"
             let oldPrice = (fullText as NSString).range(of: "\(currency) \(formattedPrice)")
@@ -110,13 +119,12 @@ class ProductListCell: UICollectionViewListCell {
             attributedString.addAttribute(.font, value: UIFont.preferredFont(forTextStyle: .body), range: oldPrice)
             content.secondaryAttributedText = attributedString
         }
-
-        productListContentView.configuration = content
-        
-        guard let stock = state.product?.stock else { return }
-        productStockLabel.text = stock == 0 ? "품절" : "잔여수량: \(stock)"
-        
-        productStockLabel.font = UIFont.preferredFont(forTextStyle: .body)
-        productStockLabel.textColor = stock == 0 ? .orange : .systemGray
+    }
+    
+    private func setStockLabel(with stock: Int) {
+        productRemainedStock.text = stock == 0 ? "품절" : "잔여수량: \(stock)"
+        productRemainedStock.font = UIFont.preferredFont(forTextStyle: .body)
+        productRemainedStock.textColor = stock == 0 ? .orange : .systemGray
+        productRemainedStock.numberOfLines = 0
     }
 }
