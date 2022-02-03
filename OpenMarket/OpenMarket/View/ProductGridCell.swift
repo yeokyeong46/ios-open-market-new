@@ -67,7 +67,14 @@ class ProductGridCell: UICollectionViewCell {
     }
     
     func configCell(with product: Product) {
-        let thumbnailString = product.thumbnail
+        setThumbnailImage(with: product.thumbnail)
+        productName.text = product.name
+        productName.font = UIFont.preferredFont(forTextStyle: .title1)
+        setPriceLabel(product.currency.rawValue, product.price, product.discountedPrice)
+        setStockLabel(with: product.stock)
+    }
+    
+    private func setThumbnailImage(with thumbnailString: String) {
         guard let thumbnailURL = URL(string: thumbnailString) else { return }
         var thumbnailData = Data()
         do {
@@ -76,13 +83,9 @@ class ProductGridCell: UICollectionViewCell {
             
         }
         productThumbnail.image = UIImage(data: thumbnailData)
-        productName.text = product.name
-        productName.font = UIFont.preferredFont(forTextStyle: .title1)
-
-        let currency = product.currency.rawValue
-        let price = product.price
-        let discountedPrice = product.discountedPrice
-        
+    }
+    
+    private func setPriceLabel(_ currency: String, _ price: Double, _ discountedPrice: Double) {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         guard let formattedPrice = numberFormatter.string(from: NSNumber(value: price)) else { return }
@@ -107,11 +110,12 @@ class ProductGridCell: UICollectionViewCell {
             attributedString.addAttribute(.font, value: UIFont.preferredFont(forTextStyle: .body), range: oldPrice)
             productPrice.attributedText = attributedString
         }
-        
-        productRemainedStock.text = product.stock == 0 ? "품절" : "잔여수량: \(product.stock)"
-        
+    }
+    
+    private func setStockLabel(with stock: Int) {
+        productRemainedStock.text = stock == 0 ? "품절" : "잔여수량: \(stock)"
         productRemainedStock.font = UIFont.preferredFont(forTextStyle: .body)
-        productRemainedStock.textColor = product.stock == 0 ? .orange : .systemGray
+        productRemainedStock.textColor = stock == 0 ? .orange : .systemGray
     }
 
 }
