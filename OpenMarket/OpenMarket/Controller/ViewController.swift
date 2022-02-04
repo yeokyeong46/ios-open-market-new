@@ -19,40 +19,40 @@ class ViewController: UIViewController {
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var loadingLabel: UILabel!
     
-    private var collectionListView: UICollectionView! = nil
-    private var collectionGridView: UICollectionView! = nil
-    private var listDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
-    private var gridDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
-    private var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
-
+    private var collectionListView: UICollectionView!
+    private var collectionGridView: UICollectionView!
+    private var listDataSource: UICollectionViewDiffableDataSource<Section, Product>!
+    private var gridDataSource: UICollectionViewDiffableDataSource<Section, Product>!
+    private var snapshot: NSDiffableDataSourceSnapshot<Section, Product>!
+    
+    private var pageNumber: Int = 1
+    private var itemsPerPage: Int = 20
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        snapshot.appendSections([.main])
         makeListView()
         makeGridView()
         setSegmentControl()
-        
-        fetchProductListData(page: 1, num: 3)
-        fetchProductListData(page: 2, num: 3)
-        fetchProductListData(page: 3, num: 3)
+        setSnapshot()
+//        collectionListView.prefetchDataSource = self
+        fetchProductListData(pageNumber, itemsPerPage)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 }
 
 extension ViewController {
-    func fetchProductListData(page pageNumber: Int, num itemsPerPage: Int) {
+    func fetchProductListData(_ pageNumber: Int, _ itemsPerPage: Int) {
         self.networkController.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
             result in
             switch result {
             case .success(let data):
-                
                 self.setProductData(with: data)
                 self.appendDatasToSnapshot(products: data.products)
-                
-                self.collectionListView.alpha = 1.0
-                self.collectionGridView.alpha = 0.0
-                
                 self.loadingLabel.isHidden = true
-                
+                self.pageNumber += 1
             case .failure(let error):
                 print(error.description)
             }
@@ -62,24 +62,36 @@ extension ViewController {
 
 extension ViewController {
     private func setProductData(with data: ProductList) {
-        self.productList = data
-        self.products = data.products
+        productList = data
+        products = data.products
     }
     
     private func makeListView() {
-        self.configureListHierarchy()
-        self.configureListDataSource()
+        configureListHierarchy()
+        configureListDataSource()
+        arrangeCollectionView(collectionListView)
     }
     
     private func makeGridView() {
-        self.configureGridHierarchy()
-        self.configureGridDataSource()
+        configureGridHierarchy()
+        configureGridDataSource()
+//        arrangeCollectionView(collectionGridView)
+    }
+    
+    private func arrangeCollectionView(_ targetView: UICollectionView) {
+        targetView.translatesAutoresizingMaskIntoConstraints = false
+        targetView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        targetView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        targetView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        targetView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
     }
 }
 
 extension ViewController {
     func setSegmentControl() {
         segmentControl.selectedSegmentIndex = 0
+        collectionListView.alpha = 1.0
+        collectionGridView.alpha = 0.0
         segmentControl.addTarget(self, action: #selector(segmentControlchanged), for: UIControl.Event.valueChanged)
     }
     
@@ -107,7 +119,7 @@ extension ViewController {
     }
     
     private func configureListHierarchy() {
-        collectionListView = UICollectionView(frame: view.safeAreaLayoutGuide.layoutFrame, collectionViewLayout: createListLayout())
+        collectionListView = UICollectionView(frame: view.bounds, collectionViewLayout: createListLayout())
         collectionListView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionListView)
         collectionListView.delegate = self
@@ -123,7 +135,6 @@ extension ViewController {
             (collectionView: UICollectionView, indexPath: IndexPath, item: Product) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
-        
     }
     
     //grid
@@ -144,7 +155,7 @@ extension ViewController {
     }
     
     private func configureGridHierarchy() {
-        collectionGridView = UICollectionView(frame: view.safeAreaLayoutGuide.layoutFrame, collectionViewLayout: createGridLayout())
+        collectionGridView = UICollectionView(frame: view.bounds, collectionViewLayout: createGridLayout())
         collectionGridView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionGridView)
         collectionGridView.translatesAutoresizingMaskIntoConstraints = false
@@ -155,7 +166,6 @@ extension ViewController {
             collectionGridView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionGridView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-        
         collectionGridView.delegate = self
     }
     
@@ -170,8 +180,12 @@ extension ViewController {
         }
     }
     
+    private func setSnapshot() {
+        snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
+        snapshot.appendSections([.main])
+    }
+    
     private func appendDatasToSnapshot(products: [Product]) {
-        
         snapshot.appendItems(products)
         gridDataSource.apply(snapshot, animatingDifferences: true)
         listDataSource.apply(snapshot, animatingDifferences: true)
@@ -185,10 +199,16 @@ extension ViewController: UICollectionViewDelegate {
         print(indexPath)
         print(products[indexPath.row])
     }
+//
+//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//        if indexPath.row == self.products.count - 1 {
+//            self.fetchProductListData(self.pageNumber, self.itemsPerPage)
+//        }
+//    }
 }
 
-
-
-
-
-
+extension ViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        print("prefetch data \(indexPaths)")
+    }
+}
