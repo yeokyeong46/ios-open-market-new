@@ -3,7 +3,7 @@ import UIKit
 class ProductGridCell: UICollectionViewCell {
     let productName: UILabel = {
         let label = UILabel()
-        label.numberOfLines = 0
+        label.numberOfLines = 2
         return label
     }()
     

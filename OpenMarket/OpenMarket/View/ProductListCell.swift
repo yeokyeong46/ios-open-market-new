@@ -61,17 +61,6 @@ class ProductListCell: UICollectionViewListCell {
         productRemainedStockContraints = contraints
         
     }
-    
-//    private var separatorConstraint: NSLayoutConstraint?
-//    private func updateSeparatorConstraint() {
-//        guard let textLayoutGuide = productListContentView.textLayoutGuide else { return }
-//        if let existingConstraint = separatorConstraint, existingConstraint.isActive {
-//            return
-//        }
-//        let constraint = separatorLayoutGuide.leadingAnchor.constraint(equalTo: textLayoutGuide.leadingAnchor)
-//        constraint.isActive = true
-//        separatorConstraint = constraint
-//    }
 
     override func updateConfiguration(using state: UICellConfigurationState) {
         setupViewIfNeeded()
@@ -93,9 +82,6 @@ class ProductListCell: UICollectionViewListCell {
         productListContentView.configuration = content
         
         setStockLabel(with: stock)
-//        productRemainedStockContraints?.leading.constant = content.directionalLayoutMargins.trailing
-//        updateSeparatorConstraint()
-        
     }
     
     private func setThumbnailImage(_ content: inout UIListContentConfiguration, with thumbnailString: String) {

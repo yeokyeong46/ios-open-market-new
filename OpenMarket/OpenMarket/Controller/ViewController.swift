@@ -13,8 +13,9 @@ private enum Section: Hashable {
 class ViewController: UIViewController {
     
     let networkController = NetworkConnector()
-    var productList: ProductList? = nil
+//    var productList: ProductList? = nil
     var products: [Product] = []
+    var isLoading: Bool = false
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var loadingLabel: UILabel!
@@ -26,7 +27,17 @@ class ViewController: UIViewController {
     private var snapshot: NSDiffableDataSourceSnapshot<Section, Product>!
     
     private var pageNumber: Int = 1
-    private var itemsPerPage: Int = 20
+    private var itemsPerPage: Int = 30
+    
+    let footerRegistration = UICollectionView.SupplementaryRegistration
+    <UICollectionViewListCell>(elementKind: UICollectionView.elementKindSectionFooter) {
+        (footerView, elementKind, indexPath) in
+        
+        // Configure footer view content
+        var configuration = footerView.defaultContentConfiguration()
+        configuration.text = "loading..."
+        footerView.contentConfiguration = configuration
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +45,6 @@ class ViewController: UIViewController {
         makeGridView()
         setSegmentControl()
         setSnapshot()
-//        collectionListView.prefetchDataSource = self
         fetchProductListData(pageNumber, itemsPerPage)
     }
     
@@ -45,6 +55,7 @@ class ViewController: UIViewController {
 
 extension ViewController {
     func fetchProductListData(_ pageNumber: Int, _ itemsPerPage: Int) {
+        self.isLoading = true
         self.networkController.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
             result in
             switch result {
@@ -53,17 +64,20 @@ extension ViewController {
                 self.appendDatasToSnapshot(products: data.products)
                 self.loadingLabel.isHidden = true
                 self.pageNumber += 1
+                self.isLoading = false
             case .failure(let error):
                 print(error.description)
             }
+            print("finished...")
         }
     }
 }
 
 extension ViewController {
     private func setProductData(with data: ProductList) {
-        productList = data
-        products = data.products
+//        productList = data
+//        products = data.products
+        products.append(contentsOf: data.products)
     }
     
     private func makeListView() {
@@ -75,7 +89,6 @@ extension ViewController {
     private func makeGridView() {
         configureGridHierarchy()
         configureGridDataSource()
-//        arrangeCollectionView(collectionGridView)
     }
     
     private func arrangeCollectionView(_ targetView: UICollectionView) {
@@ -114,7 +127,7 @@ extension ViewController {
 extension ViewController {
     // list
     private func createListLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        var config = UICollectionLayoutListConfiguration(appearance: .plain)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     
@@ -199,16 +212,11 @@ extension ViewController: UICollectionViewDelegate {
         print(indexPath)
         print(products[indexPath.row])
     }
-//
-//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//        if indexPath.row == self.products.count - 1 {
-//            self.fetchProductListData(self.pageNumber, self.itemsPerPage)
-//        }
-//    }
-}
 
-extension ViewController: UICollectionViewDataSourcePrefetching {
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        print("prefetch data \(indexPaths)")
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row == self.products.count - 10 && isLoading == false {
+            print("loading...")
+            fetchProductListData(self.pageNumber, self.itemsPerPage)
+        }
     }
 }
