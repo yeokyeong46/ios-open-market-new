@@ -29,16 +29,6 @@ class ViewController: UIViewController {
     private var pageNumber: Int = 1
     private var itemsPerPage: Int = 30
     
-    let footerRegistration = UICollectionView.SupplementaryRegistration
-    <UICollectionViewListCell>(elementKind: UICollectionView.elementKindSectionFooter) {
-        (footerView, elementKind, indexPath) in
-        
-        // Configure footer view content
-        var configuration = footerView.defaultContentConfiguration()
-        configuration.text = "loading..."
-        footerView.contentConfiguration = configuration
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         makeListView()
@@ -76,7 +66,6 @@ extension ViewController {
 extension ViewController {
     private func setProductData(with data: ProductList) {
 //        productList = data
-//        products = data.products
         products.append(contentsOf: data.products)
     }
     
@@ -103,8 +92,8 @@ extension ViewController {
 extension ViewController {
     func setSegmentControl() {
         segmentControl.selectedSegmentIndex = 0
-        collectionListView.alpha = 1.0
-        collectionGridView.alpha = 0.0
+        collectionListView.isHidden = false
+        collectionGridView.isHidden = true
         segmentControl.addTarget(self, action: #selector(segmentControlchanged), for: UIControl.Event.valueChanged)
     }
     
@@ -112,14 +101,14 @@ extension ViewController {
     func segmentControlchanged() {
         switch segmentControl.selectedSegmentIndex {
         case 0:
-            collectionListView.alpha = 1.0
-            collectionGridView.alpha = 0.0
+            collectionListView.isHidden = false
+            collectionGridView.isHidden = true
         case 1:
-            collectionListView.alpha = 0.0
-            collectionGridView.alpha = 1.0
+            collectionListView.isHidden = true
+            collectionGridView.isHidden = false
         default:
-            collectionListView.alpha = 1.0
-            collectionGridView.alpha = 0.0
+            collectionListView.isHidden = false
+            collectionGridView.isHidden = true
         }
     }
 }
