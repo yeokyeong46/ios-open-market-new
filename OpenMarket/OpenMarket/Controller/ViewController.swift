@@ -23,12 +23,18 @@ class ViewController: UIViewController {
     private var collectionGridView: UICollectionView! = nil
     private var listDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
     private var gridDataSource: UICollectionViewDiffableDataSource<Section, Product>! = nil
-    
-    
+    private var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchProductListData(page: 1, num: 30)
+        snapshot.appendSections([.main])
+        makeListView()
+        makeGridView()
         setSegmentControl()
+        
+        fetchProductListData(page: 1, num: 3)
+        fetchProductListData(page: 2, num: 3)
+        fetchProductListData(page: 3, num: 3)
     }
 }
 
@@ -40,8 +46,7 @@ extension ViewController {
             case .success(let data):
                 
                 self.setProductData(with: data)
-                self.makeListView()
-                self.makeGridView()
+                self.appendDatasToSnapshot(products: data.products)
                 
                 self.collectionListView.alpha = 1.0
                 self.collectionGridView.alpha = 0.0
@@ -119,10 +124,6 @@ extension ViewController {
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
         
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(products)
-        listDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     //grid
@@ -130,7 +131,7 @@ extension ViewController {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(view.bounds.height*0.4))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
         group.interItemSpacing = .fixed(8)
         
@@ -167,11 +168,13 @@ extension ViewController {
             (collectionView: UICollectionView, indexPath: IndexPath, item: Product) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
         }
+    }
+    
+    private func appendDatasToSnapshot(products: [Product]) {
         
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Product>()
-        snapshot.appendSections([.main])
         snapshot.appendItems(products)
-        gridDataSource.apply(snapshot, animatingDifferences: false)
+        gridDataSource.apply(snapshot, animatingDifferences: true)
+        listDataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 
@@ -179,6 +182,8 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionListView.deselectItem(at: indexPath, animated: true)
         collectionGridView.deselectItem(at: indexPath, animated: true)
+        print(indexPath)
+        print(products[indexPath.row])
     }
 }
 

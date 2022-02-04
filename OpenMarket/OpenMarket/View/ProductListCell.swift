@@ -72,7 +72,7 @@ class ProductListCell: UICollectionViewListCell {
 //        constraint.isActive = true
 //        separatorConstraint = constraint
 //    }
-//
+
     override func updateConfiguration(using state: UICellConfigurationState) {
         setupViewIfNeeded()
         
