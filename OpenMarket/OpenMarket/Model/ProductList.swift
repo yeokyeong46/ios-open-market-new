@@ -1,4 +1,4 @@
-struct ProductList: Decodable {
+struct ProductList: Decodable, Hashable {
     let pageNo: Int
     let itemsPerPage: Int
     let totalCount: Int
