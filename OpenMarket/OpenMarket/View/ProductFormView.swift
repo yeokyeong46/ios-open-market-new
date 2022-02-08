@@ -1,14 +1,6 @@
 import UIKit
 
-class ProductAddingView: UIStackView {
-    
-    private let addImagebutton: UIButton = {
-        let button: UIButton = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("+", for: .normal)
-        button.backgroundColor = .systemGray
-        return button
-    }()
+class ProductFormView: UIStackView {
     
     private let nameField: UITextField = {
         let textField = UITextField()
@@ -62,6 +54,16 @@ class ProductAddingView: UIStackView {
         return textView
     }()
     
+    private let textStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.distribution = .fill
+        stack.spacing = 8
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         settingStacks()
@@ -72,21 +74,30 @@ class ProductAddingView: UIStackView {
     }
     
     private func settingStacks() {
+        
         priceStack.addArrangedSubview(priceField)
         priceStack.addArrangedSubview(currencySegment)
         
-        self.addArrangedSubview(addImagebutton)
-        self.addArrangedSubview(nameField)
-        self.addArrangedSubview(priceStack)
-        self.addArrangedSubview(discountField)
-        self.addArrangedSubview(stockField)
-        self.addArrangedSubview(descriptionField)
-        
+        textStack.addArrangedSubview(nameField)
+        textStack.addArrangedSubview(priceStack)
+        textStack.addArrangedSubview(discountField)
+        textStack.addArrangedSubview(stockField)
+        textStack.addArrangedSubview(descriptionField)
+        self.addArrangedSubview(textStack)
         
         self.axis = .vertical
         self.alignment = .fill
         self.distribution = .fill
         self.spacing = 8
         self.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func setData(with product: Product) {
+        nameField.text = product.name
+        priceField.text = String(product.price)
+        currencySegment.selectedSegmentIndex = product.currency.rawValue == "KRW" ? 0 : 1
+        discountField.text = product.price - product.discountedPrice != 0 ? String(product.price - product.discountedPrice) : String(0)
+        stockField.text = String(product.stock)
+        descriptionField.text = "no description"
     }
 }

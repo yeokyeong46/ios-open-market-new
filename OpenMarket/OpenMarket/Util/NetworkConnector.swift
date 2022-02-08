@@ -94,14 +94,14 @@ class NetworkConnector {
                 return
             }
             bodydata.append(imagesbody)
-            bodydata.append(Data())
-//            bodydata.append(image)
+//            bodydata.append(Data())
+            bodydata.append(image)
             bodydata.append(enter)
         }
         
         bodydata.append(boundaryPostfix)
         print(bodydata)
-        print(String(data: bodydata, encoding: .utf8)!)
+        print(String(data: bodydata, encoding: .utf8))
         
         var request = URLRequest(url: URL(string: "https://market-training.yagom-academy.kr/api/products")!)
         request.httpMethod = "POST"

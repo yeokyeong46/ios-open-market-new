@@ -1,17 +1,35 @@
 import UIKit
 
-class ProductAddingViewController: UIViewController {
-    
-    private let productAddingForm = ProductAddingView()
+class ProductFormViewController: UIViewController {
+    private var product: Product?
+    private let productAddingForm = ProductFormView()
     private let scrollView = UIScrollView()
 
+    init(prod: Product?) {
+        product = prod
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setNavigationItems()
         setFormUI()
-        
+        if product != nil {
+            navigationItem.title = "상품수정"
+            setProductData()
+        }
     }
+    
+    func setProductData() {
+        productAddingForm.setData(with: product!)
+    }
+    
+    
     func setFormUI() {
         view.addSubview(scrollView)
         arrangeConstraint(view: scrollView, guide: view.safeAreaLayoutGuide)

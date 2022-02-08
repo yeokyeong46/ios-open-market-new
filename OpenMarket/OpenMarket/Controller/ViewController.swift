@@ -80,7 +80,7 @@ extension ViewController {
     
     @objc
     func moveAddProduct() {
-        let addProductPage = ProductAddingViewController()
+        let addProductPage = ProductFormViewController(prod: nil)
         self.navigationController?.pushViewController(addProductPage, animated: true)
     }
 }
@@ -220,6 +220,8 @@ extension ViewController: UICollectionViewDelegate {
         collectionGridView.deselectItem(at: indexPath, animated: true)
         print(indexPath)
         print(products[indexPath.row])
+        let productEditingView = ProductFormViewController(prod: products[indexPath.row])
+        self.navigationController?.pushViewController(productEditingView, animated: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
