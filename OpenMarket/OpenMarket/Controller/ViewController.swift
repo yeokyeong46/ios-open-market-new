@@ -33,13 +33,55 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         makeListView()
         makeGridView()
-        setSegmentControl()
+        setControls()
         setSnapshot()
         fetchProductListData(pageNumber, itemsPerPage)
+//        networkController.requestPost() {
+//            result in print(result)
+//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+}
+
+extension ViewController {
+    func setControls() {
+        setSegmentControl()
+        setNavigationBarItem()
+    }
+    
+    func setSegmentControl() {
+        segmentControl.selectedSegmentIndex = 0
+        collectionListView.isHidden = false
+        collectionGridView.isHidden = true
+        segmentControl.addTarget(self, action: #selector(segmentControlchanged), for: UIControl.Event.valueChanged)
+    }
+    
+    @objc
+    func segmentControlchanged() {
+        switch segmentControl.selectedSegmentIndex {
+        case 0:
+            collectionListView.isHidden = false
+            collectionGridView.isHidden = true
+        case 1:
+            collectionListView.isHidden = true
+            collectionGridView.isHidden = false
+        default:
+            collectionListView.isHidden = false
+            collectionGridView.isHidden = true
+        }
+    }
+    
+    func setNavigationBarItem() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(moveAddProduct))
+    }
+    
+    @objc
+    func moveAddProduct() {
+        let addProductPage = ProductAddingViewController()
+        self.navigationController?.pushViewController(addProductPage, animated: true)
     }
 }
 
@@ -89,29 +131,7 @@ extension ViewController {
     }
 }
 
-extension ViewController {
-    func setSegmentControl() {
-        segmentControl.selectedSegmentIndex = 0
-        collectionListView.isHidden = false
-        collectionGridView.isHidden = true
-        segmentControl.addTarget(self, action: #selector(segmentControlchanged), for: UIControl.Event.valueChanged)
-    }
-    
-    @objc
-    func segmentControlchanged() {
-        switch segmentControl.selectedSegmentIndex {
-        case 0:
-            collectionListView.isHidden = false
-            collectionGridView.isHidden = true
-        case 1:
-            collectionListView.isHidden = true
-            collectionGridView.isHidden = false
-        default:
-            collectionListView.isHidden = false
-            collectionGridView.isHidden = true
-        }
-    }
-}
+
 
 extension ViewController {
     // list

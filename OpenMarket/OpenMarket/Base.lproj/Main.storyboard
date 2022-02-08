@@ -41,11 +41,6 @@
                                 <segment title="GRID"/>
                             </segments>
                         </segmentedControl>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="ang-Ff-cDM">
-                            <connections>
-                                <segue destination="XOL-Ch-2mm" kind="show" id="roK-iL-Mkq"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="loadingLabel" destination="QEq-14-im1" id="u5i-xi-Mgi"/>
@@ -55,31 +50,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1047.8260869565217" y="138.61607142857142"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="j3U-Cp-K9Q">
-            <objects>
-                <viewController id="XOL-Ch-2mm" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="9LC-ds-UbS">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="상품등록하는 화면" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R4m-yp-49J">
-                                <rect key="frame" x="111" y="147" width="168" height="43"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="gtn-06-g5a"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="4uj-wU-rFp"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3lc-yK-J8H" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1811.594202898551" y="138.61607142857142"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="xXM-6V-8Pa">
