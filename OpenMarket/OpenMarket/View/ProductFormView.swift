@@ -1,7 +1,16 @@
 import UIKit
 
 class ProductFormView: UIStackView {
-    
+//
+//    let imageScrollView = UIScrollView()
+//
+//    private let imageStack: UIStackView = {
+//        let stack = UIStackView()
+//        stack.axis = .horizontal
+//        stack.spacing = 8
+//        return stack
+//    }()
+//
     private let nameField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "상품명"
@@ -47,10 +56,10 @@ class ProductFormView: UIStackView {
     private let descriptionField: UITextView = {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.heightAnchor.constraint(equalToConstant: 1000).isActive = true
+        textView.isScrollEnabled = false
         textView.isEditable = true
         textView.font = UIFont.preferredFont(forTextStyle: .body)
-        textView.text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjcaaaaaaaaaaaaaaaaaaaaaaaaaaaasdlaksdjalksdjqlijraihlzjxnclzkxjc"
+        textView.text = " 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지 상품설명 1000자 까지"
         return textView
     }()
     
@@ -83,6 +92,13 @@ class ProductFormView: UIStackView {
         textStack.addArrangedSubview(discountField)
         textStack.addArrangedSubview(stockField)
         textStack.addArrangedSubview(descriptionField)
+        
+//        imageScrollView.addSubview(imageStack)
+//        imageScrollView.translatesAutoresizingMaskIntoConstraints = false
+//        imageScrollView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+//        imageScrollView.bottomAnchor.constraint(equalTo: textStack.topAnchor).isActive = true
+//
+//        self.addArrangedSubview(imageScrollView)
         self.addArrangedSubview(textStack)
         
         self.axis = .vertical
@@ -92,12 +108,31 @@ class ProductFormView: UIStackView {
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    func setData(with product: Product) {
+    func setData(with product: ProductDetail) {
         nameField.text = product.name
         priceField.text = String(product.price)
         currencySegment.selectedSegmentIndex = product.currency.rawValue == "KRW" ? 0 : 1
-        discountField.text = product.price - product.discountedPrice != 0 ? String(product.price - product.discountedPrice) : String(0)
+        discountField.text = String(product.discountedPrice)
         stockField.text = String(product.stock)
-        descriptionField.text = "no description"
+        descriptionField.text = product.description
+        
+//        for image in product.images {
+//            let imageView = UIImageView()
+//
+//            guard let imageURL = URL(string: image.url) else { return }
+//            var imageData = Data()
+//            do {
+//                imageData = try Data(contentsOf: imageURL)
+//            } catch {
+//
+//            }
+//            imageView.image = UIImage(data: imageData)
+//            imageView.translatesAutoresizingMaskIntoConstraints = false
+//            imageView.contentMode = .scaleAspectFit
+//            imageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.3).isActive = true
+//            imageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.3).isActive = true
+//
+//            imageStack.addArrangedSubview(imageView)
+//        }
     }
 }

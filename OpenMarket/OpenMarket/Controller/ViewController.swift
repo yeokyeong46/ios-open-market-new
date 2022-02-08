@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     let networkController = NetworkConnector()
 //    var productList: ProductList? = nil
     var products: [Product] = []
+    var selectedProduct: ProductDetail?
     var isLoading: Bool = false
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
@@ -103,6 +104,19 @@ extension ViewController {
             print("finished...")
         }
     }
+    
+    func moveFormPageWithDetailData(_ productId: Int){
+        self.networkController.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
+            result in
+            switch result {
+            case .success(let data):
+                let productEditingView = ProductFormViewController(prod: data)
+                self.navigationController?.pushViewController(productEditingView, animated: true)
+            case .failure(let error):
+                print(error.description)
+            }
+        }
+    }
 }
 
 extension ViewController {
@@ -130,8 +144,6 @@ extension ViewController {
         targetView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
     }
 }
-
-
 
 extension ViewController {
     // list
@@ -218,10 +230,7 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionListView.deselectItem(at: indexPath, animated: true)
         collectionGridView.deselectItem(at: indexPath, animated: true)
-        print(indexPath)
-        print(products[indexPath.row])
-        let productEditingView = ProductFormViewController(prod: products[indexPath.row])
-        self.navigationController?.pushViewController(productEditingView, animated: true)
+        moveFormPageWithDetailData(products[indexPath.row].id)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

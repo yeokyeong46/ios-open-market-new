@@ -1,11 +1,19 @@
 import UIKit
 
-class ProductFormViewController: UIViewController {
-    private var product: Product?
-    private let productAddingForm = ProductFormView()
+class ProductFormViewController: UIViewController, UICollectionViewDelegate {
+    private var product: ProductDetail?
     private let scrollView = UIScrollView()
+    private let container = UIView()
+    private let productAddingForm = ProductFormView()
+    
+    private lazy var imageCollectionView: UICollectionView = {
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: view.frame.width, height: view.frame.width*0.35), collectionViewLayout: flowLayout)
+        return collectionView
+    }()
 
-    init(prod: Product?) {
+    init(prod: ProductDetail?) {
         product = prod
         super.init(nibName: nil, bundle: nil)
     }
@@ -18,7 +26,7 @@ class ProductFormViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setNavigationItems()
-        setFormUI()
+        setUI()
         if product != nil {
             navigationItem.title = "상품수정"
             setProductData()
@@ -29,23 +37,40 @@ class ProductFormViewController: UIViewController {
         productAddingForm.setData(with: product!)
     }
     
-    
-    func setFormUI() {
+    func setUI() {
         view.addSubview(scrollView)
         arrangeConstraint(view: scrollView, guide: view.safeAreaLayoutGuide)
-        
-        let container = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(container)
         arrangeConstraint(view: container, guide: scrollView.contentLayoutGuide)
         container.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor).isActive = true
         
+        setImageCollectionView()
+        setFormView()
+    }
+    
+    func setImageCollectionView() {
+        container.addSubview(imageCollectionView)
+        imageCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            imageCollectionView.topAnchor.constraint(equalTo: container.topAnchor),
+            imageCollectionView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            imageCollectionView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            imageCollectionView.heightAnchor.constraint(equalToConstant: view.frame.width*0.35)
+        ])
+        imageCollectionView.dataSource = self
+        imageCollectionView.delegate = self
+        imageCollectionView.register(ImageCell.self, forCellWithReuseIdentifier: ImageCell.identifier)
+    }
+    
+    func setFormView() {
         container.addSubview(productAddingForm)
-        
-        productAddingForm.topAnchor.constraint(equalTo: container.topAnchor).isActive = true
-        productAddingForm.bottomAnchor.constraint(equalTo: container.bottomAnchor).isActive = true
-        productAddingForm.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16).isActive = true
-        productAddingForm.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16).isActive = true
+        productAddingForm.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            productAddingForm.topAnchor.constraint(equalTo: imageCollectionView.bottomAnchor),
+            productAddingForm.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            productAddingForm.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            productAddingForm.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+        ])
     }
     
     func setNavigationItems() {
@@ -73,5 +98,31 @@ extension UIViewController {
         view.bottomAnchor.constraint(equalTo: guide.bottomAnchor).isActive = true
         view.leadingAnchor.constraint(equalTo: guide.leadingAnchor).isActive = true
         view.trailingAnchor.constraint(equalTo: guide.trailingAnchor).isActive = true
+    }
+}
+
+extension ProductFormViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        guard let prod = product else {
+            return 1
+        }
+        return prod.images.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCell.identifier, for: indexPath) as! ImageCell
+        guard let prod = product else {
+            
+            cell.setPlusImage()
+            return cell
+        }
+        cell.setImage(imageURLString: prod.images[indexPath.row].url)
+        return cell
+    }
+}
+
+extension ProductFormViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width*0.3, height: view.frame.width*0.3)
     }
 }

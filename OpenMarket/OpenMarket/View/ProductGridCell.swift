@@ -89,7 +89,7 @@ class ProductGridCell: UICollectionViewCell {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         guard let formattedPrice = numberFormatter.string(from: NSNumber(value: price)) else { return }
-        guard let formatteddiscountedPrice = numberFormatter.string(from: NSNumber(value: discountedPrice)) else { return }
+        guard let formatteddiscountedPrice = numberFormatter.string(from: NSNumber(value: price-discountedPrice)) else { return }
         
         productPrice.textColor = .systemGray
         productPrice.numberOfLines = 0

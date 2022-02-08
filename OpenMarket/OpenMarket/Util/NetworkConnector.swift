@@ -64,8 +64,21 @@ class NetworkConnector {
     
     func requestPost (completionHandler: @escaping (Bool)->Void) {
         let sampleImage = UIImage(named: "xcode")
-        guard let sampleImageData = sampleImage?.pngData() else { return }
-        let sampleImages = [sampleImageData, sampleImageData]
+        guard let sampleImageData = sampleImage?.jpegData(compressionQuality: 0.2) else { return }
+        let sampleImages = [sampleImageData]
+        
+        let sampleDict: Dictionary<String, Any> = [
+            "name" : "왜안되냐",
+             "descriptions" : "진짜로 안되는거야...?",
+             "price" : 1234,
+             "currency" : "KRW",
+             "secret": "n@5r!GMqkHtcnr"
+        ]
+        var sampleJson: Data?
+        do {
+            sampleJson = try JSONSerialization.data(withJSONObject: sampleDict, options: [])
+        } catch {}
+        
         
         let boundary = "Boundary-\(UUID().uuidString)"
         guard let boundaryPrefix = "--\(boundary)\r\n".data(using: .utf8) else { return }
@@ -75,34 +88,34 @@ class NetworkConnector {
         var bodydata = Data()
         bodydata.append(boundaryPrefix)
         var paramsbody = ""
-        paramsbody += "Content-Disposition: form-data; name=\"params\"\r\n\r\n"
-        paramsbody += "{ \"name\" : \"asdasdaaaaaaaa\", \"descriptions\" : \"asdasdasdaaaaaaaa\", \"price\" : 1234, \"currency\" : \"KRW\", \"secret\": \"n@5r!GMqkHtcnr\" }\r\n"
+        paramsbody += "Content-Disposition: form-data; name=params\r\nContent-Type: application/json\r\n\r\n"
+//        paramsbody += "{ \"name\" : \"왜안되냐\", \"descriptions\" : \"진짜로 안되는거야...?\", \"price\" : 1234, \"currency\" : \"KRW\", \"secret\": \"n@5r!GMqkHtcnr\" }\r\n"
         
         guard let paramsbody = paramsbody.data(using: .utf8) else {
             print("param error")
             return
         }
         bodydata.append(paramsbody)
+        bodydata.append(sampleJson!)
+        bodydata.append(enter)
 
         for image in sampleImages {
             bodydata.append(boundaryPrefix)
             var imagesbody = ""
-            imagesbody += "Content-Disposition: form-data; name=\"images\"; filename=\"xcode.png\"\r\n"
-            imagesbody += "Content-Type: image/png\r\n\r\n"
+            imagesbody += "Content-Disposition: form-data; name=images; filename=xcode.jpeg\r\n"
+            imagesbody += "Content-Type: image/jpeg\r\n\r\n"
             guard let imagesbody = imagesbody.data(using: .utf8) else {
                 print("image error")
                 return
             }
             bodydata.append(imagesbody)
-//            bodydata.append(Data())
             bodydata.append(image)
             bodydata.append(enter)
         }
         
         bodydata.append(boundaryPostfix)
-        print(bodydata)
-        print(String(data: bodydata, encoding: .utf8))
-        
+//        print(String(data: bodydata, encoding: .utf8)!)
+
         var request = URLRequest(url: URL(string: "https://market-training.yagom-academy.kr/api/products")!)
         request.httpMethod = "POST"
         request.addValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
@@ -110,31 +123,35 @@ class NetworkConnector {
 
         request.httpBody = bodydata
 
-//        self.session.dataTask(with: request) { data, response, error in
-//            if let error = error {
-//                print(error)
-//                completionHandler(false)
-//            }
-//            guard let httpResponse = response as? HTTPURLResponse,
-//                (200...299).contains(httpResponse.statusCode) else {
+        self.session.dataTask(with: request) { data, response, error in
+            print("hello?")
+            print(data)
+            print(error)
+            print(response)
+            if let error = error {
+                print(error)
+                completionHandler(false)
+            }
+            guard let httpResponse = response as? HTTPURLResponse,
+                (200...299).contains(httpResponse.statusCode) else {
 //                    print("response error \(response)")
-//                    completionHandler(false)
-//                    return
-//            }
-//            guard let data = data else {
+                    completionHandler(false)
+                    return
+            }
+            guard let data = data else {
 //                print("no data")
-//                completionHandler(false)
-//                return
-//            }
-//            guard let result = Decoder.shared.decode(type: ProductDetail.self, from: data) else {
+                completionHandler(false)
+                return
+            }
+            guard let result = Decoder.shared.decode(type: ProductDetail.self, from: data) else {
 //                print("no result")
-//                completionHandler(false)
-//                return
-//            }
-//            DispatchQueue.main.async {
-//                completionHandler(true)
-//            }
-//        }.resume()
+                completionHandler(false)
+                return
+            }
+            DispatchQueue.main.async {
+                completionHandler(true)
+            }
+        }.resume()
 
     }
 }

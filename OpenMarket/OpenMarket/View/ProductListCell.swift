@@ -100,7 +100,7 @@ class ProductListCell: UICollectionViewListCell {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         guard let formattedPrice = numberFormatter.string(from: NSNumber(value: price)) else { return }
-        guard let formatteddiscountedPrice = numberFormatter.string(from: NSNumber(value: discountedPrice)) else { return }
+        guard let formatteddiscountedPrice = numberFormatter.string(from: NSNumber(value: price-discountedPrice)) else { return }
         
         content.secondaryTextProperties.color = .systemGray
         content.secondaryTextProperties.numberOfLines = 0
