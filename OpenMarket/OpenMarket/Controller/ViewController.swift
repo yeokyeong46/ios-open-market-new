@@ -75,6 +75,7 @@ extension ViewController {
     @objc
     func moveAddProduct() {
         let addProductPage = ProductFormViewController(prod: nil)
+        addProductPage.delegate = self
         self.navigationController?.pushViewController(addProductPage, animated: true)
     }
 }
@@ -104,6 +105,7 @@ extension ViewController {
             switch result {
             case .success(let data):
                 let productEditingView = ProductFormViewController(prod: data)
+                productEditingView.delegate = self
                 self.navigationController?.pushViewController(productEditingView, animated: true)
             case .failure(let error):
                 print(error.description)
@@ -217,10 +219,19 @@ extension ViewController {
         gridDataSource.apply(snapshot, animatingDifferences: true)
         listDataSource.apply(snapshot, animatingDifferences: true)
     }
+    
+    func resetDataSource() {
+        snapshot = .init()
+        products = []
+        setSnapshot()
+        pageNumber = 1
+        fetchProductListData(pageNumber, itemsPerPage)
+    }
 }
 
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath)
         collectionListView.deselectItem(at: indexPath, animated: true)
         collectionGridView.deselectItem(at: indexPath, animated: true)
         moveFormPageWithDetailData(products[indexPath.row].id)

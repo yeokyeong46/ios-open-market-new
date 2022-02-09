@@ -8,6 +8,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
     private let imagePickerController = UIImagePickerController()
     private var addedImages: [UIImage] = []
     private var numOfCell = 1
+    var delegate: ViewController?
     
     private lazy var imageCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
@@ -105,13 +106,25 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         let networkConnector = NetworkConnector()
         guard let prod = product else {
             networkConnector.requestPost(productData: formData, productImages: addedImages) {
-                result in print(result)
+                result in
+                switch result {
+                case .success(let data):
+                    self.delegate?.resetDataSource()
+                case .failure(let error):
+                    print(error.description)
+                }
             }
             self.navigationController?.popViewController(animated: true)
             return
         }
         networkConnector.requestPATCH(path: "api/products/\(prod.id)", productData: formData) {
-            result in print(result)
+            result in
+            switch result {
+            case .success(let data):
+                self.delegate?.resetDataSource()
+            case .failure(let error):
+                print(error.description)
+            }
         }
         self.navigationController?.popViewController(animated: true)
     }

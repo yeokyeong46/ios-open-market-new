@@ -64,8 +64,7 @@ class NetworkConnector {
         }.resume()
     }
     
-    
-    func requestPost(productData: Dictionary<String, Any>, productImages: [UIImage] ,completionHandler: @escaping (Bool)->Void) {
+    func requestPost(productData: Dictionary<String, Any>, productImages: [UIImage] ,completionHandler: @escaping (Result<Bool,RequestError>)->Void) {
         var productImageDatas: [Data] = []
         for pImage in productImages {
             guard let imageData = pImage.jpegData(compressionQuality: 0.1) else { return }
@@ -117,33 +116,60 @@ class NetworkConnector {
         request.httpBody = bodydata
 
         self.session.dataTask(with: request) { data, response, error in
-            print(String(data: data!, encoding: .utf8)!)
-            print(response)
-            if let error = error {
-                print(error)
-                completionHandler(false)
+            if let _ = error {
+                completionHandler(.failure(.transportError))
             }
             guard let httpResponse = response as? HTTPURLResponse,
                 (200...299).contains(httpResponse.statusCode) else {
-                    print("response error \(response)")
-                    completionHandler(false)
+                    completionHandler(.failure(.serverError))
                     return
             }
             guard let data = data else {
-                print("no data")
-                completionHandler(false)
+                completionHandler(.failure(.emptyDataError))
                 return
             }
             guard let result = Decoder.shared.decode(type: ProductDetail.self, from: data) else {
-                print("no result")
-                completionHandler(false)
+                completionHandler(.failure(.decodeError))
                 return
             }
             DispatchQueue.main.async {
-                completionHandler(true)
+                completionHandler(.success(true))
             }
         }.resume()
+    }
+    
+    func requestPATCH(path: String, productData: Dictionary<String, Any>, completionHandler: @escaping (Result<Bool,RequestError>)->Void) {
+        var productDataJson: Data?
+        do {
+            productDataJson = try JSONSerialization.data(withJSONObject: productData, options: [])
+        } catch {}
 
+        var request = URLRequest(url: URL(string: "https://market-training.yagom-academy.kr/\(path)")!)
+        request.httpMethod = "PATCH"
+        request.addValue(myID, forHTTPHeaderField: "identifier")
+        request.httpBody = productDataJson
+
+        self.session.dataTask(with: request) { data, response, error in
+            if let _ = error {
+                completionHandler(.failure(.transportError))
+            }
+            guard let httpResponse = response as? HTTPURLResponse,
+                (200...299).contains(httpResponse.statusCode) else {
+                    completionHandler(.failure(.serverError))
+                    return
+            }
+            guard let data = data else {
+                completionHandler(.failure(.emptyDataError))
+                return
+            }
+            guard let result = Decoder.shared.decode(type: ProductDetail.self, from: data) else {
+                completionHandler(.failure(.decodeError))
+                return
+            }
+            DispatchQueue.main.async {
+                completionHandler(.success(true))
+            }
+        }.resume()
     }
 }
 
