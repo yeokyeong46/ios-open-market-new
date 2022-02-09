@@ -12,7 +12,7 @@ private enum Section: Hashable {
 
 class ViewController: UIViewController {
     
-    let networkController = NetworkConnector()
+    let networkConnector = NetworkConnector()
 //    var productList: ProductList? = nil
     var products: [Product] = []
     var selectedProduct: ProductDetail?
@@ -37,13 +37,6 @@ class ViewController: UIViewController {
         setControls()
         setSnapshot()
         fetchProductListData(pageNumber, itemsPerPage)
-//        networkController.requestPost() {
-//            result in print(result)
-//        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
     }
 }
 
@@ -89,7 +82,7 @@ extension ViewController {
 extension ViewController {
     func fetchProductListData(_ pageNumber: Int, _ itemsPerPage: Int) {
         self.isLoading = true
-        self.networkController.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
+        self.networkConnector.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
             result in
             switch result {
             case .success(let data):
@@ -106,7 +99,7 @@ extension ViewController {
     }
     
     func moveFormPageWithDetailData(_ productId: Int){
-        self.networkController.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
+        self.networkConnector.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
             result in
             switch result {
             case .success(let data):

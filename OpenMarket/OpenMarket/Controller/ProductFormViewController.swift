@@ -91,7 +91,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
     func setNavigationItems() {
         navigationItem.title = "상품등록"
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelAction))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(addingAction))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneAction))
     }
     
     @objc
@@ -100,10 +100,21 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
     }
     
     @objc
-    func addingAction() {
+    func doneAction() {
+        let formData = productAddingForm.getFormData()
+        let networkConnector = NetworkConnector()
+        guard let prod = product else {
+            networkConnector.requestPost(productData: formData, productImages: addedImages) {
+                result in print(result)
+            }
+            self.navigationController?.popViewController(animated: true)
+            return
+        }
+        networkConnector.requestPATCH(path: "api/products/\(prod.id)", productData: formData) {
+            result in print(result)
+        }
         self.navigationController?.popViewController(animated: true)
     }
-
 }
 
 extension UIViewController {
