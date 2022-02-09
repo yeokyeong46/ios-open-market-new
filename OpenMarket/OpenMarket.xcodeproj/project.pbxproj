@@ -116,8 +116,8 @@
 			children = (
 				C298A4C827A15F0400734EE8 /* ProductListCell.swift */,
 				C298A4CB27A23F2700734EE8 /* ProductGridCell.swift */,
-				C298A4D727B1266D00734EE8 /* ProductFormView.swift */,
 				C298A4DB27B29F5700734EE8 /* ImageCell.swift */,
+				C298A4D727B1266D00734EE8 /* ProductFormView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

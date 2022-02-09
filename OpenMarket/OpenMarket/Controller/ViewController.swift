@@ -13,7 +13,6 @@ private enum Section: Hashable {
 class ViewController: UIViewController {
     
     let networkConnector = NetworkConnector()
-//    var productList: ProductList? = nil
     var products: [Product] = []
     var selectedProduct: ProductDetail?
     var isLoading: Bool = false
@@ -116,7 +115,6 @@ extension ViewController {
 
 extension ViewController {
     private func setProductData(with data: ProductList) {
-//        productList = data
         products.append(contentsOf: data.products)
     }
     

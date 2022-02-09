@@ -105,19 +105,16 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         let formData = productAddingForm.getFormData()
         let networkConnector = NetworkConnector()
         guard let prod = product else {
-            networkConnector.requestPost(productData: formData, productImages: addedImages) {
-                result in
-                switch result {
-                case .success(let data):
-                    self.delegate?.resetDataSource()
-                case .failure(let error):
-                    print(error.description)
-                }
-            }
+            postNewProduct(formData, by: networkConnector)
             self.navigationController?.popViewController(animated: true)
             return
         }
-        networkConnector.requestPATCH(path: "api/products/\(prod.id)", productData: formData) {
+        editProdcut(formData, target: prod.id, by: networkConnector)
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func postNewProduct(_ formData: Dictionary<String, Any>, by networkConnector: NetworkConnector) {
+        networkConnector.requestPost(productData: formData, productImages: addedImages) {
             result in
             switch result {
             case .success(let data):
@@ -126,7 +123,18 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
                 print(error.description)
             }
         }
-        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func editProdcut(_ formData: Dictionary<String, Any>, target id: Int, by networkConnector: NetworkConnector) {
+        networkConnector.requestPATCH(path: "api/products/\(id)", productData: formData) {
+            result in
+            switch result {
+            case .success(let data):
+                self.delegate?.resetDataSource()
+            case .failure(let error):
+                print(error.description)
+            }
+        }
     }
 }
 

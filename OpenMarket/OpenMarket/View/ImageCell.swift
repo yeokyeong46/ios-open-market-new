@@ -39,10 +39,10 @@ class ImageCell: UICollectionViewCell {
     }
     
     private func setConstraints(){
-        labelConstraints()
+        imageConstraints()
     }
     
-    private func labelConstraints(){
+    private func imageConstraints(){
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         imageView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
