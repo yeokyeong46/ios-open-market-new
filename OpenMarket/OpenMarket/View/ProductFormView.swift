@@ -105,6 +105,18 @@ class ProductFormView: UIStackView {
         stockField.text = String(product.stock)
         descriptionField.text = product.description
     }
+    
+    func getFormData() -> Dictionary<String, Any> {
+        return [
+            "name" : nameField.text,
+            "descriptions" : descriptionField.text,
+            "price" : Int(priceField.text!),
+            "currency" : currencySegment.selectedSegmentIndex.description,
+             "secret": myPassword,
+            "discounted_price": (discountField.text != nil ? Int(discountField.text!) : 0),
+            "stock": (stockField.text != nil ? Int(stockField.text!) : 0)
+        ]
+    }
 }
 
 extension ProductFormView: UITextFieldDelegate {

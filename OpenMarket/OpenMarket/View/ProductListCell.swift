@@ -94,9 +94,10 @@ class ProductListCell: UICollectionViewListCell {
         }
         content.image = UIImage(data: thumbnailData)
         content.imageProperties.maximumSize = CGSize(width: UIScreen.main.bounds.height * 0.09, height: UIScreen.main.bounds.height * 0.09)
+        content.imageProperties.reservedLayoutSize = CGSize(width: UIScreen.main.bounds.height * 0.09, height: UIScreen.main.bounds.height * 0.09)
     }
     
-    private func setPriceLabel(_ content: inout UIListContentConfiguration, _ currency: String, _ price: Double, _ discountedPrice: Double ) {
+    private func setPriceLabel(_ content: inout UIListContentConfiguration, _ currency: String, _ price: Int, _ discountedPrice: Int ) {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
         guard let formattedPrice = numberFormatter.string(from: NSNumber(value: price)) else { return }
