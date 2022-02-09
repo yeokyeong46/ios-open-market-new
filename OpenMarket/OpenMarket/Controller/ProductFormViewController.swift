@@ -1,10 +1,13 @@
 import UIKit
 
-class ProductFormViewController: UIViewController, UICollectionViewDelegate {
+class ProductFormViewController: UIViewController, UICollectionViewDelegate, UINavigationControllerDelegate {
     private var product: ProductDetail?
     private let scrollView = UIScrollView()
     private let container = UIView()
     private let productAddingForm = ProductFormView()
+    private let imagePickerController = UIImagePickerController()
+    private var addedImages: [UIImage] = []
+    private var numOfCell = 1
     
     private lazy var imageCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
@@ -37,7 +40,19 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate {
         productAddingForm.setData(with: product!)
     }
     
+    @objc
+    private func endEditing() {
+        view.endEditing(true)
+    }
+    
+    func viewTapGuesture() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(endEditing))
+        scrollView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
     func setUI() {
+        viewTapGuesture()
+
         view.addSubview(scrollView)
         arrangeConstraint(view: scrollView, guide: view.safeAreaLayoutGuide)
         scrollView.addSubview(container)
@@ -104,7 +119,7 @@ extension UIViewController {
 extension ProductFormViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let prod = product else {
-            return 1
+            return numOfCell
         }
         return prod.images.count
     }
@@ -112,12 +127,38 @@ extension ProductFormViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCell.identifier, for: indexPath) as! ImageCell
         guard let prod = product else {
-            
-            cell.setPlusImage()
+            if addedImages.count != 0 && indexPath.row < addedImages.count {
+                cell.setImage(addedImage: addedImages[indexPath.row])
+            } else if addedImages.count < 5 {
+                cell.setPlusImage()
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(touchToPickPhoto))
+                cell.imageView.addGestureRecognizer(tapGesture)
+                cell.imageView.isUserInteractionEnabled = true
+            }
             return cell
         }
         cell.setImage(imageURLString: prod.images[indexPath.row].url)
         return cell
+    }
+    
+    @objc
+    func touchToPickPhoto() {
+        if addedImages.count == 5 {
+            return
+        }
+        imagePickerController.sourceType = .photoLibrary
+        imagePickerController.delegate = self
+        present(imagePickerController, animated: true, completion: nil)
+    }
+}
+
+extension ProductFormViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let selectedImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+        addedImages.append(selectedImage)
+        picker.dismiss(animated: true, completion: nil)
+        numOfCell += numOfCell <= 4 ? 1 : 0
+        imageCollectionView.reloadData()
     }
 }
 
