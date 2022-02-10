@@ -174,7 +174,15 @@ extension ProductFormViewController: UICollectionViewDataSource {
         cell.setImage(imageURLString: prod.images[indexPath.row].url)
         return cell
     }
-    
+}
+
+extension ProductFormViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width*0.3, height: view.frame.width*0.3)
+    }
+}
+
+extension ProductFormViewController: UIImagePickerControllerDelegate {
     @objc
     private func touchToPickPhoto() {
         if addedImages.count == 5 {
@@ -184,9 +192,7 @@ extension ProductFormViewController: UICollectionViewDataSource {
         imagePickerController.delegate = self
         present(imagePickerController, animated: true, completion: nil)
     }
-}
-
-extension ProductFormViewController: UIImagePickerControllerDelegate {
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let selectedImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         addedImages.append(selectedImage)
@@ -196,8 +202,4 @@ extension ProductFormViewController: UIImagePickerControllerDelegate {
     }
 }
 
-extension ProductFormViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width*0.3, height: view.frame.width*0.3)
-    }
-}
+

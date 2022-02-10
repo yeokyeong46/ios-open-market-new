@@ -221,9 +221,8 @@ extension ProductsViewController {
         snapshot = .init()
         products = []
         setSnapshot()
-        for num in 1..<pageNumber {
-            fetchProductListData(num, itemsPerPage)
-        }
+        pageNumber = 1
+        fetchProductListData(pageNumber, itemsPerPage)
     }
 }
 

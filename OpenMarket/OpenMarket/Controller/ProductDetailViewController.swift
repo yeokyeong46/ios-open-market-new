@@ -10,17 +10,9 @@ class ProductDetailViewController: UIViewController, UICollectionViewDelegate {
     private lazy var imageCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
-        let collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: view.frame.width, height: view.frame.width*0.35), collectionViewLayout: flowLayout)
+        let collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: view.frame.width - 32, height: view.frame.width - 32), collectionViewLayout: flowLayout)
         return collectionView
     }()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        prodcutDetailView.setData(with: product)
-        setNavigationItems()
-        setUI()
-    }
     
     init (product: ProductDetail) {
         self.product = product
@@ -29,6 +21,14 @@ class ProductDetailViewController: UIViewController, UICollectionViewDelegate {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemBackground
+        prodcutDetailView.setData(with: product)
+        setNavigationItems()
+        setUI()
     }
     
     private func setNavigationItems() {
@@ -43,18 +43,21 @@ class ProductDetailViewController: UIViewController, UICollectionViewDelegate {
         arrangeConstraint(view: container, guide: scrollView.contentLayoutGuide)
         container.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor).isActive = true
         
-//        setImageCollectionUI()
+        setImageCollectionUI()
 //        setProductDetailUI()
     }
     
     private func setImageCollectionUI() {
         container.addSubview(imageCollectionView)
+        
+        imageCollectionView.backgroundColor = .red
+        
         imageCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imageCollectionView.topAnchor.constraint(equalTo: container.topAnchor),
             imageCollectionView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
             imageCollectionView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
-            imageCollectionView.heightAnchor.constraint(equalToConstant: view.frame.width*0.35)
+            imageCollectionView.heightAnchor.constraint(equalToConstant: view.frame.width - 32)
         ])
         imageCollectionView.dataSource = self
         imageCollectionView.delegate = self
@@ -112,5 +115,11 @@ extension ProductDetailViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCell.identifier, for: indexPath) as! ImageCell
         cell.setImage(imageURLString: product.images[indexPath.row].url)
         return cell
+    }
+}
+
+extension ProductDetailViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width - 50, height: view.frame.width - 50)
     }
 }
