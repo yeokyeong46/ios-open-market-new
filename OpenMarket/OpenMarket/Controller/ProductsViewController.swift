@@ -10,7 +10,7 @@ private enum Section: Hashable {
     case main
 }
 
-class ViewController: UIViewController {
+class ProductsViewController: UIViewController {
     
     let networkConnector = NetworkConnector()
     var products: [Product] = []
@@ -39,7 +39,7 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController {
+extension ProductsViewController {
     func setControls() {
         setSegmentControl()
         setNavigationBarItem()
@@ -79,7 +79,7 @@ extension ViewController {
     }
 }
 
-extension ViewController {
+extension ProductsViewController {
     func fetchProductListData(_ pageNumber: Int, _ itemsPerPage: Int) {
         self.isLoading = true
         self.networkConnector.requestGET(path: "api/products?page_no=\(pageNumber)&items_per_page=\(itemsPerPage)", type: ProductList.self) {
@@ -98,14 +98,13 @@ extension ViewController {
         }
     }
     
-    func moveFormPageWithDetailData(_ productId: Int){
+    func moveToDetailView(_ productId: Int){
         self.networkConnector.requestGET(path: "api/products/\(productId)", type: ProductDetail.self) {
             result in
             switch result {
             case .success(let data):
-                let productEditingView = ProductFormViewController(prod: data)
-                productEditingView.delegate = self
-                self.navigationController?.pushViewController(productEditingView, animated: true)
+                let detailView = ProductDetailViewController(product: data)
+                self.navigationController?.pushViewController(detailView, animated: true)
             case .failure(let error):
                 print(error.description)
             }
@@ -113,7 +112,7 @@ extension ViewController {
     }
 }
 
-extension ViewController {
+extension ProductsViewController {
     private func setProductData(with data: ProductList) {
         products.append(contentsOf: data.products)
     }
@@ -138,7 +137,7 @@ extension ViewController {
     }
 }
 
-extension ViewController {
+extension ProductsViewController {
     // list
     private func createListLayout() -> UICollectionViewLayout {
         var config = UICollectionLayoutListConfiguration(appearance: .plain)
@@ -222,17 +221,17 @@ extension ViewController {
         snapshot = .init()
         products = []
         setSnapshot()
-        pageNumber = 1
-        fetchProductListData(pageNumber, itemsPerPage)
+        for num in 1..<pageNumber {
+            fetchProductListData(num, itemsPerPage)
+        }
     }
 }
 
-extension ViewController: UICollectionViewDelegate {
+extension ProductsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath)
         collectionListView.deselectItem(at: indexPath, animated: true)
         collectionGridView.deselectItem(at: indexPath, animated: true)
-        moveFormPageWithDetailData(products[indexPath.row].id)
+        moveToDetailView(products[indexPath.row].id)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

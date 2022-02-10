@@ -8,7 +8,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
     private let imagePickerController = UIImagePickerController()
     private var addedImages: [UIImage] = []
     private var numOfCell = 1
-    var delegate: ViewController?
+    var delegate: ProductsViewController?
     
     private lazy var imageCollectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
@@ -37,7 +37,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         }
     }
     
-    func setProductData() {
+    private func setProductData() {
         productAddingForm.setData(with: product!)
     }
     
@@ -46,12 +46,12 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         view.endEditing(true)
     }
     
-    func viewTapGuesture() {
+    private func viewTapGuesture() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(endEditing))
         scrollView.addGestureRecognizer(tapGestureRecognizer)
     }
     
-    func setUI() {
+    private func setUI() {
         viewTapGuesture()
 
         view.addSubview(scrollView)
@@ -60,11 +60,11 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         arrangeConstraint(view: container, guide: scrollView.contentLayoutGuide)
         container.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor).isActive = true
         
-        setImageCollectionView()
-        setFormView()
+        setImageCollectionUI()
+        setFormUI()
     }
     
-    func setImageCollectionView() {
+    private func setImageCollectionUI() {
         container.addSubview(imageCollectionView)
         imageCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -78,7 +78,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         imageCollectionView.register(ImageCell.self, forCellWithReuseIdentifier: ImageCell.identifier)
     }
     
-    func setFormView() {
+    private func setFormUI() {
         container.addSubview(productAddingForm)
         productAddingForm.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -89,19 +89,19 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         ])
     }
     
-    func setNavigationItems() {
+    private func setNavigationItems() {
         navigationItem.title = "상품등록"
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelAction))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneAction))
     }
     
     @objc
-    func cancelAction() {
+    private func cancelAction() {
         self.navigationController?.popViewController(animated: true)
     }
     
     @objc
-    func doneAction() {
+    private func doneAction() {
         let formData = productAddingForm.getFormData()
         let networkConnector = NetworkConnector()
         guard let prod = product else {
@@ -113,7 +113,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         self.navigationController?.popViewController(animated: true)
     }
     
-    func postNewProduct(_ formData: Dictionary<String, Any>, by networkConnector: NetworkConnector) {
+    private func postNewProduct(_ formData: Dictionary<String, Any>, by networkConnector: NetworkConnector) {
         networkConnector.requestPost(productData: formData, productImages: addedImages) {
             result in
             switch result {
@@ -125,7 +125,7 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
         }
     }
     
-    func editProdcut(_ formData: Dictionary<String, Any>, target id: Int, by networkConnector: NetworkConnector) {
+    private func editProdcut(_ formData: Dictionary<String, Any>, target id: Int, by networkConnector: NetworkConnector) {
         networkConnector.requestPATCH(path: "api/products/\(id)", productData: formData) {
             result in
             switch result {
@@ -141,10 +141,12 @@ class ProductFormViewController: UIViewController, UICollectionViewDelegate, UIN
 extension UIViewController {
     func arrangeConstraint(view: UIView, guide: UILayoutGuide) {
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
-        view.bottomAnchor.constraint(equalTo: guide.bottomAnchor).isActive = true
-        view.leadingAnchor.constraint(equalTo: guide.leadingAnchor).isActive = true
-        view.trailingAnchor.constraint(equalTo: guide.trailingAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: guide.topAnchor),
+            view.bottomAnchor.constraint(equalTo: guide.bottomAnchor),
+            view.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: guide.trailingAnchor)
+        ])
     }
 }
 
@@ -174,7 +176,7 @@ extension ProductFormViewController: UICollectionViewDataSource {
     }
     
     @objc
-    func touchToPickPhoto() {
+    private func touchToPickPhoto() {
         if addedImages.count == 5 {
             return
         }

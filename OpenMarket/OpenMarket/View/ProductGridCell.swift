@@ -70,7 +70,7 @@ class ProductGridCell: UICollectionViewCell {
         setThumbnailImage(with: product.thumbnail)
         productName.text = product.name
         productName.font = UIFont.preferredFont(forTextStyle: .title1)
-        setPriceLabel(product.currency.rawValue, product.price, product.discountedPrice)
+        setPriceLabel(product.currency.rawValue, Int(product.price), Int(product.discountedPrice))
         setStockLabel(with: product.stock)
     }
     

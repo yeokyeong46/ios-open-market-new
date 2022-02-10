@@ -6,7 +6,6 @@ class ProductFormView: UIStackView {
         let textField = UITextField()
         textField.placeholder = "상품명"
         textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
     
@@ -49,7 +48,6 @@ class ProductFormView: UIStackView {
     
     private let descriptionField: UITextView = {
         let textView = UITextView()
-        textView.translatesAutoresizingMaskIntoConstraints = false
         textView.isScrollEnabled = false
         textView.isEditable = true
         textView.font = UIFont.preferredFont(forTextStyle: .body)
@@ -63,7 +61,6 @@ class ProductFormView: UIStackView {
         stack.alignment = .fill
         stack.distribution = .fill
         stack.spacing = 8
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
     
@@ -89,20 +86,14 @@ class ProductFormView: UIStackView {
         textStack.addArrangedSubview(descriptionField)
 
         self.addArrangedSubview(textStack)
-        
-        self.axis = .vertical
-        self.alignment = .fill
-        self.distribution = .fill
-        self.spacing = 8
-        self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     func setData(with product: ProductDetail) {
         nameField.text = product.name
-        priceField.text = String(product.price)
+        priceField.text = String(Int(product.price))
         currencySegment.selectedSegmentIndex = product.currency.rawValue == "KRW" ? 0 : 1
-        discountField.text = String(product.discountedPrice)
-        stockField.text = String(product.stock)
+        discountField.text = String(Int(product.discountedPrice))
+        stockField.text = String(Int(product.stock))
         descriptionField.text = product.description
     }
     

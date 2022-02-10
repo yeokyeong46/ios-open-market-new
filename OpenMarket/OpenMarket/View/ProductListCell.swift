@@ -78,7 +78,7 @@ class ProductListCell: UICollectionViewListCell {
         setThumbnailImage(&content, with: thumbnailString)
         content.text = state.product?.name
         content.textProperties.font = UIFont.preferredFont(forTextStyle: .title1)
-        setPriceLabel(&content, currency, price, discountedPrice)
+        setPriceLabel(&content, currency, Int(price), Int(discountedPrice))
         productListContentView.configuration = content
         
         setStockLabel(with: stock)
